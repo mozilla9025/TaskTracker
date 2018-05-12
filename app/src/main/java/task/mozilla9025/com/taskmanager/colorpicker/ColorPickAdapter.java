@@ -1,9 +1,11 @@
 package task.mozilla9025.com.taskmanager.colorpicker;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,6 +20,7 @@ public class ColorPickAdapter extends RecyclerView.Adapter<ColorPickAdapter.Colo
 
     private List<ColorEntry> colorEntryList;
     private Context context;
+    private ColorEntry selectedEntry;
 
     public ColorPickAdapter(Context context, List<ColorEntry> colorEntryList) {
         this.context = context;
@@ -27,17 +30,38 @@ public class ColorPickAdapter extends RecyclerView.Adapter<ColorPickAdapter.Colo
     @NonNull
     @Override
     public ColorVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        return new ColorVH(LayoutInflater.from(context)
+                .inflate(R.layout.item_color, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ColorVH holder, int position) {
+    public void onBindViewHolder(@NonNull ColorVH h, int position) {
+        int pos = h.getAdapterPosition();
+        Log.d("COLOR", "onBindViewHolder: "+pos);
+        h.colorBg.getBackground().setColorFilter(colorEntryList.get(pos).color, PorterDuff.Mode.SRC);
+        h.ivColorPickStatus.setVisibility(colorEntryList.get(pos).checked ? View.VISIBLE : View.INVISIBLE);
 
+        h.itemView.setOnClickListener(v -> toggleSelected(pos));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return colorEntryList == null ? 0 : colorEntryList.size();
+    }
+
+    public void toggleSelected(int pos) {
+        for (int i = 0; i < colorEntryList.size(); i++) {
+            if (i == pos)
+                colorEntryList.get(i).checked = !colorEntryList.get(i).checked;
+            else
+                colorEntryList.get(i).checked = false;
+        }
+        selectedEntry = colorEntryList.get(pos).checked ? colorEntryList.get(pos) : null;
+        notifyDataSetChanged();
+    }
+
+    public ColorEntry getSelectedColor() {
+        return selectedEntry;
     }
 
     class ColorVH extends RecyclerView.ViewHolder {
@@ -49,7 +73,7 @@ public class ColorPickAdapter extends RecyclerView.Adapter<ColorPickAdapter.Colo
 
         public ColorVH(View itemView) {
             super(itemView);
-            ButterKnife.bind(itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }
