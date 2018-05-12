@@ -20,6 +20,8 @@
                 android:layout_margin="8dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
+
+                app:cardUseCompatPadding="true"
                 app:contentPadding="8dp"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_scrollFlags="scroll|enterAlways">
@@ -56,5 +58,7 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </android.support.design.widget.CoordinatorLayout>
