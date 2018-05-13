@@ -43,7 +43,7 @@ public class TasksAdapter extends RealmRecyclerViewAdapter<Task, TasksAdapter.Ta
         h.btnEdit.setOnClickListener(v -> clickListener.onEditClick(pos));
         h.btnDelete.setOnClickListener(v -> clickListener.onDeleteClick(pos));
 
-        h.tvTaskName.setText(tasks.get(pos).getName());
+        h.tvTaskName.setText(tasks.get(pos).getTitle());
     }
 
     @Override
