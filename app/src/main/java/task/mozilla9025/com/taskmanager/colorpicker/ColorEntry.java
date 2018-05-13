@@ -1,6 +1,6 @@
 package task.mozilla9025.com.taskmanager.colorpicker;
 
-public class ColorEntry {
+public final class ColorEntry {
 
     public int color;
     public boolean checked;
@@ -9,5 +9,4 @@ public class ColorEntry {
         this.color = color;
         this.checked = false;
     }
-
 }
