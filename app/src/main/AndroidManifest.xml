@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="task.mozilla9025.com.taskmanager">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".app.App"
         android:allowBackup="true"

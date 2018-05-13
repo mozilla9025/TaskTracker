@@ -2,6 +2,7 @@ package task.mozilla9025.com.taskmanager.ui.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +23,11 @@ public class TasksAdapter extends RealmRecyclerViewAdapter<Task, TasksAdapter.Ta
     private RealmResults<Task> tasks;
     private TaskClickListener clickListener;
 
-    public TasksAdapter(Context context, RealmResults<Task> tasks) {
-        super(tasks, true);
+    public TasksAdapter(Fragment fragment, RealmResults<Task> tasks) {
+        super(tasks, true, true);
         this.tasks = tasks;
-        this.context = context;
-        this.clickListener = (TaskClickListener) context;
+        this.context = fragment.getContext();
+        this.clickListener = (TaskClickListener) fragment;
     }
 
     @NonNull

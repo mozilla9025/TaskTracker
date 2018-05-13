@@ -1,5 +1,7 @@
 package task.mozilla9025.com.taskmanager.models;
 
+import android.support.annotation.Nullable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -7,15 +9,19 @@ import io.realm.annotations.PrimaryKey;
 public class Task extends RealmObject {
 
     @PrimaryKey
-    private int id;
+    private Integer id;
     @Index
     private String title;
     private String color;
+    @Nullable
     private String description;
-    private long scheduledTo;
-    private long dueDate;
-    private int projectId;
-    private long created;
+    @Nullable
+    private Long scheduledTo;
+    @Nullable
+    private Long dueDate;
+    @Nullable
+    private Integer projectId;
+    private Long created;
 
     public Task() {
     }
@@ -26,15 +32,15 @@ public class Task extends RealmObject {
         return t;
     }
 
-    public static Task createTaskInProject(String title, int projectId) {
+    public static Task createTaskInProject(String title, Integer projectId) {
         Task t = createTaskInInbox(title);
         t.projectId = projectId;
         return t;
     }
 
-    public static Task createCompleteTask(int id, String title, String color,
-                                          String description, long scheduledTo,
-                                          long dueDate, long created, int projectId) {
+    public static Task createCompleteTask(Integer id, String title, String color,
+                                          String description, Long scheduledTo,
+                                          Long dueDate, Long created, Integer projectId) {
         Task t = new Task();
         t.id = id;
         t.title = title;
@@ -47,12 +53,11 @@ public class Task extends RealmObject {
         return t;
     }
 
-
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -72,43 +77,47 @@ public class Task extends RealmObject {
         this.color = color;
     }
 
+    @Nullable
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(@Nullable String description) {
         this.description = description;
     }
 
-    public long getScheduledTo() {
+    @Nullable
+    public Long getScheduledTo() {
         return scheduledTo;
     }
 
-    public void setScheduledTo(long scheduledTo) {
+    public void setScheduledTo(@Nullable Long scheduledTo) {
         this.scheduledTo = scheduledTo;
     }
 
-    public long getDueDate() {
+    @Nullable
+    public Long getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(long dueDate) {
+    public void setDueDate(@Nullable Long dueDate) {
         this.dueDate = dueDate;
     }
 
-    public int getProjectId() {
+    @Nullable
+    public Integer getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(int projectId) {
+    public void setProjectId(@Nullable Integer projectId) {
         this.projectId = projectId;
     }
 
-    public long getCreated() {
+    public Long getCreated() {
         return created;
     }
 
-    public void setCreated(long created) {
+    public void setCreated(Long created) {
         this.created = created;
     }
 }

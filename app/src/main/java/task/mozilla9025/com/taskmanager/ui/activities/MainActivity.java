@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_inbox) {
-            // Handle the camera action
+            commitFragmentTransaction(InboxFragment.getInstance());
         } else if (id == R.id.nav_workflow) {
 
         } else if (id == R.id.nav_projects) {
