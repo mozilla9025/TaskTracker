@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,65 +19,71 @@ import butterknife.ButterKnife;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 import task.mozilla9025.com.taskmanager.R;
-import task.mozilla9025.com.taskmanager.models.Task;
-import task.mozilla9025.com.taskmanager.utils.DateUtils;
+import task.mozilla9025.com.taskmanager.models.Project;
 
-public class TasksAdapter extends RealmRecyclerViewAdapter<Task, TasksAdapter.TaskVH> {
+public class ProjectsAdapter extends RealmRecyclerViewAdapter<Project, ProjectsAdapter.TaskVH> {
 
     private Context context;
-    private RealmResults<Task> tasks;
-    private TaskClickListener clickListener;
+    private RealmResults<Project> projects;
+    private ProjectClickListener clickListener;
 
-    public TasksAdapter(Fragment fragment, RealmResults<Task> tasks) {
-        super(tasks, true, true);
-        this.tasks = tasks;
+    public ProjectsAdapter(Fragment fragment, RealmResults<Project> projects) {
+        super(projects, true, true);
+        this.projects = projects;
         this.context = fragment.getContext();
-        this.clickListener = (TaskClickListener) fragment;
+        this.clickListener = (ProjectClickListener) fragment;
     }
 
     @NonNull
     @Override
     public TaskVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new TaskVH(LayoutInflater.from(context)
-                .inflate(R.layout.item_task, parent, false));
+                .inflate(R.layout.item_project, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull TaskVH h, int position) {
         int pos = h.getAdapterPosition();
-        Task task = tasks.get(pos);
+        Project project = projects.get(pos);
 
         h.itemView.setOnClickListener(v -> clickListener.onTaskClick(pos));
         h.btnEdit.setOnClickListener(v -> clickListener.onEditClick(pos));
         h.btnDelete.setOnClickListener(v -> clickListener.onDeleteClick(pos));
 
-        h.tvTaskName.setText(task.getTitle());
-        if (task.getDueDate() == null) {
-            h.tvDeadline.setVisibility(View.GONE);
+        h.tvTaskName.setText(project.getName());
+        if (project.getTaskCount() == null) {
+            h.tvTaskCount.setVisibility(View.GONE);
         } else {
-            h.tvDeadline.setVisibility(View.VISIBLE);
-            h.tvDeadline.setText("Deadline: " + DateUtils.formatDate(task.getDueDate()));
+            h.tvTaskCount.setVisibility(View.VISIBLE);
+            h.tvTaskCount.setText("Tasks: " + project.getTaskCount());
         }
-
-        h.viewColor.getBackground().setColorFilter(Color.parseColor(task.getColor()), PorterDuff.Mode.SRC);
+        if (project.getColor() != null) {
+            try {
+                h.viewColor.getBackground().setColorFilter(Color.parseColor(project.getColor()), PorterDuff.Mode.SRC);
+            } catch (IllegalArgumentException e) {
+                h.viewColor.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.grey), PorterDuff.Mode.SRC);
+            }
+        } else {
+            h.viewColor.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.grey), PorterDuff.Mode.SRC);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return tasks == null ? 0 : tasks.size();
+        return projects == null ? 0 : projects.size();
     }
 
     class TaskVH extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.tv_task_name)
+        @BindView(R.id.tv_project_name)
         TextView tvTaskName;
-        @BindView(R.id.tv_task_deadline)
-        TextView tvDeadline;
-        @BindView(R.id.btn_edit_task)
+        @BindView(R.id.tv_task_count)
+        TextView tvTaskCount;
+        @BindView(R.id.btn_edit_project)
         ImageButton btnEdit;
-        @BindView(R.id.btn_delete_task)
+        @BindView(R.id.btn_delete_project)
         ImageButton btnDelete;
-        @BindView(R.id.task_color)
+        @BindView(R.id.project_color)
         View viewColor;
 
         public TaskVH(View itemView) {
@@ -85,7 +92,7 @@ public class TasksAdapter extends RealmRecyclerViewAdapter<Task, TasksAdapter.Ta
         }
     }
 
-    public interface TaskClickListener {
+    public interface ProjectClickListener {
         void onTaskClick(int pos);
 
         void onEditClick(int pos);

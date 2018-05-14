@@ -19,7 +19,7 @@
             android:layout_height="wrap_content">
 
             <View
-                android:id="@+id/task_color"
+                android:id="@+id/project_color"
                 android:layout_width="6dp"
                 android:layout_height="0dp"
                 android:background="@color/colorPrimary"
@@ -33,12 +33,12 @@
                 android:layout_margin="8dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/ll_task_controls"
-                app:layout_constraintStart_toEndOf="@id/task_color"
+                app:layout_constraintEnd_toStartOf="@id/ll_project_controls"
+                app:layout_constraintStart_toEndOf="@id/project_color"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/tv_task_name"
+                    android:id="@+id/tv_project_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -50,7 +50,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/tv_task_deadline"
+                    android:id="@+id/tv_task_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:lines="1"
@@ -64,7 +64,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/ll_task_controls"
+                android:id="@+id/ll_project_controls"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:gravity="center_vertical"
@@ -75,7 +75,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/btn_edit_task"
+                    android:id="@+id/btn_edit_project"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_margin="4dp"
@@ -84,7 +84,7 @@
                     android:tint="@color/colorPrimaryDark" />
 
                 <ImageButton
-                    android:id="@+id/btn_delete_task"
+                    android:id="@+id/btn_delete_project"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:background="@drawable/btn_circle_shape"

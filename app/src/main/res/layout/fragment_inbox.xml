@@ -14,6 +14,7 @@
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap">
 
+
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -21,9 +22,7 @@
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
                 app:cardUseCompatPadding="true"
-                app:contentPadding="8dp"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:layout_scrollFlags="scroll|enterAlways">
+                app:contentPadding="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -55,12 +54,20 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_inbox"
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nsv_contacts_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbars="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_inbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="vertical" />
+    </android.support.v4.widget.NestedScrollView>
+
+
 </android.support.design.widget.CoordinatorLayout>

@@ -13,18 +13,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import task.mozilla9025.com.taskmanager.models.Task;
+import task.mozilla9025.com.taskmanager.models.Project;
 import task.mozilla9025.com.taskmanager.utils.JsonParser;
 import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
 import task.mozilla9025.com.taskmanager.utils.eventbus.GlobalBus;
 
-public final class TaskApiController {
+public class ProjectApiController {
 
-    private TasksApi tasksApi;
+    private ProjectApi projectApi;
     private String accessToken;
     private JsonParser parser;
 
-    private static TasksApi createApi() {
+    public ProjectApiController(String accessToken) {
+        this.accessToken = accessToken;
+        this.projectApi = createApi();
+        this.parser = new JsonParser();
+    }
+
+    private static ProjectApi createApi() {
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.MINUTES)
@@ -36,17 +42,11 @@ public final class TaskApiController {
                 .client(client)
                 .build();
 
-        return retrofit.create(TasksApi.class);
+        return retrofit.create(ProjectApi.class);
     }
 
-    public TaskApiController(String accessToken) {
-        this.accessToken = accessToken;
-        this.tasksApi = createApi();
-        this.parser = new JsonParser();
-    }
-
-    public void getTasksInInbox(int limit, int offset) {
-        tasksApi.tasksInInbox(accessToken, limit, offset).enqueue(new Callback<ResponseBody>() {
+    public void getProjects() {
+        projectApi.getProjects(accessToken).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (!response.isSuccessful()) {
@@ -61,10 +61,10 @@ public final class TaskApiController {
                     return;
                 }
                 try {
-                    List<Task> tasks = parser.parseTaskList(responseStr);
+                    List<Project> projects = parser.parseProjectList(responseStr);
                     try (Realm realm = Realm.getDefaultInstance()) {
                         realm.executeTransaction(tr -> {
-                            tr.insertOrUpdate(tasks);
+                            tr.insertOrUpdate(projects);
                         });
                     }
                 } catch (JSONException e) {
@@ -79,8 +79,8 @@ public final class TaskApiController {
         });
     }
 
-    public void getTasks(Integer projectId, int limit, int offset) {
-        tasksApi.tasksInProject(accessToken, projectId, limit, offset).enqueue(new Callback<ResponseBody>() {
+    public void createProject(String name) {
+        projectApi.create(accessToken, name).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (!response.isSuccessful()) {
@@ -95,12 +95,13 @@ public final class TaskApiController {
                     return;
                 }
                 try {
-                    List<Task> tasks = parser.parseTaskList(responseStr);
+                    Project project = parser.parseProject(responseStr);
                     try (Realm realm = Realm.getDefaultInstance()) {
                         realm.executeTransaction(tr -> {
-                            tr.insertOrUpdate(tasks);
+                            tr.insertOrUpdate(project);
                         });
                     }
+                    GlobalBus.getBus().post(new BusMessage().projectCreated());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -113,8 +114,8 @@ public final class TaskApiController {
         });
     }
 
-    public void createTaskInInbox(String title) {
-        tasksApi.createTaskInInbox(accessToken, title).enqueue(new Callback<ResponseBody>() {
+    public void editProject(Integer projectId, String property, String value) {
+        projectApi.edit(accessToken, projectId, property, value).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (!response.isSuccessful()) {
@@ -129,13 +130,13 @@ public final class TaskApiController {
                     return;
                 }
                 try {
-                    Task task = parser.parseTask(responseStr);
+                    Project project = parser.parseProject(responseStr);
                     try (Realm realm = Realm.getDefaultInstance()) {
                         realm.executeTransaction(tr -> {
-                            tr.insertOrUpdate(task);
+                            tr.insertOrUpdate(project);
                         });
                     }
-                    GlobalBus.getBus().post(new BusMessage().taskCreated());
+                    GlobalBus.getBus().post(new BusMessage().projectEdited());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -148,78 +149,8 @@ public final class TaskApiController {
         });
     }
 
-    public void createTaskInProject(String title, Integer projectId) {
-        tasksApi.createTaskInProject(accessToken, projectId, title).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (!response.isSuccessful()) {
-                    GlobalBus.getBus().post(new BusMessage().error());
-                    return;
-                }
-                String responseStr = null;
-                try {
-                    responseStr = response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return;
-                }
-                try {
-                    Task task = parser.parseTask(responseStr);
-                    try (Realm realm = Realm.getDefaultInstance()) {
-                        realm.executeTransaction(tr -> {
-                            tr.insertOrUpdate(task);
-                        });
-                    }
-                    GlobalBus.getBus().post(new BusMessage().taskCreated());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                call.clone().enqueue(this);
-            }
-        });
-    }
-
-    public void editTask(Integer taskId, String property, String value) {
-        tasksApi.editTask(accessToken, taskId, property, value).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (!response.isSuccessful()) {
-                    GlobalBus.getBus().post(new BusMessage().error());
-                    return;
-                }
-                String responseStr = null;
-                try {
-                    responseStr = response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return;
-                }
-                try {
-                    Task task = parser.parseTask(responseStr);
-                    try (Realm realm = Realm.getDefaultInstance()) {
-                        realm.executeTransaction(tr -> {
-                            tr.insertOrUpdate(task);
-                        });
-                    }
-                    GlobalBus.getBus().post(new BusMessage().taskEdited());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                call.clone().enqueue(this);
-            }
-        });
-    }
-
-    public void deleteTask(Integer taskId) {
-        tasksApi.deleteTask(accessToken, taskId).enqueue(new Callback<ResponseBody>() {
+    public void deleteProject(Integer projectId) {
+        projectApi.delete(accessToken, projectId).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (!response.isSuccessful()) {
@@ -235,7 +166,7 @@ public final class TaskApiController {
                 }
                 try {
                     if (parser.parseStatus(responseStr)) {
-                        GlobalBus.getBus().post(new BusMessage().taskDeleted());
+                        GlobalBus.getBus().post(new BusMessage().projectDeleted());
                     } else {
                         GlobalBus.getBus().post(new BusMessage().error());
                     }
@@ -250,5 +181,4 @@ public final class TaskApiController {
             }
         });
     }
-
 }

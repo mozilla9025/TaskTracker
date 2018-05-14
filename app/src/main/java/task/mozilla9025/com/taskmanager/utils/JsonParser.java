@@ -15,6 +15,11 @@ public final class JsonParser {
     public JsonParser() {
     }
 
+    public boolean parseStatus(String s) throws JSONException {
+        JSONObject json = new JSONObject(s);
+        return json.getBoolean("status");
+    }
+
     public List<Task> parseTaskList(String s) throws JSONException {
         List<Task> tasks = new ArrayList<>();
         JSONObject json = new JSONObject(s);
@@ -61,9 +66,9 @@ public final class JsonParser {
                 JSONObject temp = result.getJSONObject(i);
                 Integer id = temp.getInt("id");
                 String name = temp.getString("name");
-                String description = temp.getString("description");
-                String color = temp.getString("color");
-                Long created = temp.getLong("created");
+                String description = temp.isNull("description") ? null : temp.getString("description");
+                String color = temp.isNull("color") ? null : temp.getString("color");
+                Long created = temp.getLong("created_at");
                 Integer taskCount = temp.getInt("task_count");
                 projects.add(Project.createCompleteProject(id, name, description,
                         color, created, taskCount));
@@ -79,7 +84,7 @@ public final class JsonParser {
         String name = temp.getString("name");
         String description = temp.getString("description");
         String color = temp.getString("color");
-        Long created = temp.getLong("created");
+        Long created = temp.getLong("created_at");
         Integer taskCount = temp.has("task_count") ? temp.getInt("task_count") : 0;
         return Project.createCompleteProject(id, name, description,
                 color, created, taskCount);

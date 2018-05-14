@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         if (inboxFragment == null) {
-            inboxFragment = InboxFragment.getInstance();
+            inboxFragment = new InboxFragment();
         }
         commitFragmentTransaction(inboxFragment);
     }
@@ -98,11 +98,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_inbox) {
-            commitFragmentTransaction(InboxFragment.getInstance());
+            commitFragmentTransaction(new InboxFragment());
         } else if (id == R.id.nav_workflow) {
 
         } else if (id == R.id.nav_projects) {
-
+            commitFragmentTransaction(new ProjectsFragment());
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -117,6 +117,8 @@ public class MainActivity extends AppCompatActivity
         String title = getString(R.string.app_name);
         if (fragment instanceof InboxFragment) {
             title = "Inbox";
+        } else if (fragment instanceof ProjectsFragment) {
+            title = "Projects";
         }
         tvTitle.setText(title);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

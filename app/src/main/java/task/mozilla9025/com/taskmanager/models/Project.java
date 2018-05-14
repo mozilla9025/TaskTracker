@@ -6,12 +6,12 @@ import io.realm.annotations.PrimaryKey;
 public class Project extends RealmObject {
 
     @PrimaryKey
-    private int id;
+    private Integer id;
     private String name;
     private String description;
     private String color;
-    private long created;
-    private int taskCount;
+    private Long created;
+    private Integer taskCount;
 
     public Project() {
     }
@@ -22,8 +22,8 @@ public class Project extends RealmObject {
         return p;
     }
 
-    public static Project createCompleteProject(int id, String name, String description,
-                                            String color, long created, int taskCount) {
+    public static Project createCompleteProject(Integer id, String name, String description,
+                                                String color, Long created, Integer taskCount) {
         Project p = new Project();
         p.id = id;
         p.name = name;
@@ -34,11 +34,11 @@ public class Project extends RealmObject {
         return p;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -66,19 +66,19 @@ public class Project extends RealmObject {
         this.color = color;
     }
 
-    public long getCreated() {
+    public Long getCreated() {
         return created;
     }
 
-    public void setCreated(long created) {
+    public void setCreated(Long created) {
         this.created = created;
     }
 
-    public int getTaskCount() {
+    public Integer getTaskCount() {
         return taskCount;
     }
 
-    public void setTaskCount(int taskCount) {
+    public void setTaskCount(Integer taskCount) {
         this.taskCount = taskCount;
     }
 }

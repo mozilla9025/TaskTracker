@@ -48,20 +48,12 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     public InboxFragment() {
     }
 
-    public static InboxFragment getInstance() {
-        if (instance == null) {
-            instance = new InboxFragment();
-        }
-        return instance;
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_inbox, container, false);
         ButterKnife.bind(this, view);
-        realm = Realm.getDefaultInstance();
         view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
         return view;
     }
@@ -72,8 +64,9 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
         new PreferencesHelper(getContext()).setAccessToken("Ac2QaxlCgC6oLS7QDNVHAL33nGFvhHoZvRCuX8nIaXuCr4MJzs5j6zpFzpiwEpEG");
         accessToken = new PreferencesHelper(getContext()).getAccessToken();
         taskApiController = new TaskApiController(accessToken);
+        realm = Realm.getDefaultInstance();
         taskApiController.getTasksInInbox(20, 0);
-        if (inboxTasks == null || !inboxTasks.isLoaded()) {
+        if (inboxTasks == null) {
             inboxTasks = new RealmManager().getInboxTasks(realm);
         }
         adapter = new TasksAdapter(this, inboxTasks);
@@ -82,10 +75,11 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (!realm.isClosed()) {
+    public void onDestroy() {
+        super.onDestroy();
+        if (realm != null && !realm.isClosed()) {
             realm.close();
+            realm = null;
         }
     }
 
