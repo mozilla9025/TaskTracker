@@ -16,6 +16,7 @@
         <activity android:name=".ui.activities.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -23,6 +24,8 @@
         <activity
             android:name=".ui.activities.MainActivity"
             android:exported="true" />
+        <activity android:name=".ui.activities.TaskEditActivity" />
+        <activity android:name=".ui.activities.ProjectEditActivity"></activity>
     </application>
 
 </manifest>
