@@ -1,5 +1,6 @@
 package task.mozilla9025.com.taskmanager.ui.fragments;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ import task.mozilla9025.com.taskmanager.colorpicker.ColorPickerDialog;
 import task.mozilla9025.com.taskmanager.models.Task;
 import task.mozilla9025.com.taskmanager.preferences.PreferencesHelper;
 import task.mozilla9025.com.taskmanager.realm.RealmManager;
+import task.mozilla9025.com.taskmanager.ui.activities.TaskEditActivity;
 import task.mozilla9025.com.taskmanager.ui.adapters.TasksAdapter;
 
 public class InboxFragment extends Fragment implements TasksAdapter.TaskClickListener,
@@ -95,7 +97,8 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
 
     @Override
     public void onEditClick(int pos) {
-
+        startActivity(new Intent(getContext(), TaskEditActivity.class)
+                .putExtra("task", inboxTasks.get(pos)));
     }
 
     @Override

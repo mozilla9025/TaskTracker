@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +49,7 @@ public class ProjectsAdapter extends RealmRecyclerViewAdapter<Project, ProjectsA
         h.btnEdit.setOnClickListener(v -> clickListener.onEditClick(pos));
         h.btnDelete.setOnClickListener(v -> clickListener.onDeleteClick(pos));
 
-        h.tvTaskName.setText(project.getName());
+        h.tvProjectName.setText(project.getName());
         if (project.getTaskCount() == null) {
             h.tvTaskCount.setVisibility(View.GONE);
         } else {
@@ -76,7 +75,7 @@ public class ProjectsAdapter extends RealmRecyclerViewAdapter<Project, ProjectsA
     class TaskVH extends RecyclerView.ViewHolder {
 
         @BindView(R.id.tv_project_name)
-        TextView tvTaskName;
+        TextView tvProjectName;
         @BindView(R.id.tv_task_count)
         TextView tvTaskCount;
         @BindView(R.id.btn_edit_project)

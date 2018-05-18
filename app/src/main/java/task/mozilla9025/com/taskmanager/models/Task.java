@@ -1,12 +1,14 @@
 package task.mozilla9025.com.taskmanager.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class Task extends RealmObject {
+public class Task extends RealmObject implements Parcelable {
 
     @PrimaryKey
     private Integer id;
@@ -120,4 +122,70 @@ public class Task extends RealmObject {
     public void setCreated(Long created) {
         this.created = created;
     }
+
+    protected Task(Parcel in) {
+        id = in.readByte() == 0x00 ? null : in.readInt();
+        title = in.readString();
+        color = in.readString();
+        description = in.readString();
+        scheduledTo = in.readByte() == 0x00 ? null : in.readLong();
+        dueDate = in.readByte() == 0x00 ? null : in.readLong();
+        projectId = in.readByte() == 0x00 ? null : in.readInt();
+        created = in.readByte() == 0x00 ? null : in.readLong();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(id);
+        }
+        dest.writeString(title);
+        dest.writeString(color);
+        dest.writeString(description);
+        if (scheduledTo == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeLong(scheduledTo);
+        }
+        if (dueDate == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeLong(dueDate);
+        }
+        if (projectId == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(projectId);
+        }
+        if (created == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeLong(created);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
+        @Override
+        public Task createFromParcel(Parcel in) {
+            return new Task(in);
+        }
+
+        @Override
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
 }
