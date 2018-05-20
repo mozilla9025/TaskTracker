@@ -25,7 +25,9 @@
             android:name=".ui.activities.MainActivity"
             android:exported="true" />
         <activity android:name=".ui.activities.TaskEditActivity" />
-        <activity android:name=".ui.activities.ProjectEditActivity"></activity>
+        <activity android:name=".ui.activities.ProjectEditActivity" />
+        <activity android:name=".ui.activities.ProjectActivity" />
+        <activity android:name=".ui.activities.TaskActivity"></activity>
     </application>
 
 </manifest>

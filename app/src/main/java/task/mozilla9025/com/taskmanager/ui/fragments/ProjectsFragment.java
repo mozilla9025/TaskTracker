@@ -1,20 +1,26 @@
 package task.mozilla9025.com.taskmanager.ui.fragments;
 
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.squareup.otto.Subscribe;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import task.mozilla9025.com.taskmanager.R;
@@ -26,9 +32,9 @@ import task.mozilla9025.com.taskmanager.preferences.PreferencesHelper;
 import task.mozilla9025.com.taskmanager.realm.RealmManager;
 import task.mozilla9025.com.taskmanager.ui.adapters.ProjectsAdapter;
 import task.mozilla9025.com.taskmanager.ui.adapters.TasksAdapter;
+import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
 
 public class ProjectsFragment extends Fragment implements ProjectsAdapter.ProjectClickListener {
-    private static ProjectsFragment instance;
 
     @BindView(R.id.btn_add_project)
     ImageButton btnAdd;
@@ -38,11 +44,11 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
     RecyclerView rvProjects;
 
     private Realm realm;
+    private RealmManager realmManager;
     private ProjectsAdapter adapter;
     private RealmResults<Project> projects;
     private ProjectApiController projectApiController;
     private String accessToken;
-
 
     public ProjectsFragment() {
     }
@@ -65,8 +71,9 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
         projectApiController = new ProjectApiController(accessToken);
         projectApiController.getProjects();
         realm = Realm.getDefaultInstance();
+        realmManager = new RealmManager();
         if (projects == null) {
-            projects = new RealmManager().getProjects(realm);
+            projects = realmManager.getProjects(realm);
         }
         adapter = new ProjectsAdapter(this, projects);
         rvProjects.setAdapter(adapter);
@@ -82,9 +89,8 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
         }
     }
 
-
     @Override
-    public void onTaskClick(int pos) {
+    public void onProjectClick(int pos) {
 
     }
 
@@ -95,6 +101,31 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
 
     @Override
     public void onDeleteClick(int pos) {
+        showAlertAndDelete(pos);
+    }
 
+    @OnClick(R.id.btn_add_project)
+    void addProject() {
+        if (TextUtils.isEmpty(String.valueOf(etProjectName.getText()))) {
+            return;
+        }
+        Project project = Project.createDefaultProject(String.valueOf(etProjectName.getText()));
+        projectApiController.createProject(project.getName());
+        etProjectName.setText("");
+    }
+
+    private void showAlertAndDelete(int pos) {
+        AlertDialog builder = new AlertDialog.Builder(getContext()).create();
+        builder.setTitle("Confirm");
+        builder.setMessage("Delete project \"" + adapter.getItem(pos).getName() + "\"?");
+        builder.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+        builder.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+            Integer id = adapter.getItem(pos).getId();
+            projectApiController.deleteProject(id);
+            realmManager.deleteProject(realm, id);
+            projects = realmManager.getProjects(realm);
+            adapter.updateData(projects);
+        });
+        builder.show();
     }
 }

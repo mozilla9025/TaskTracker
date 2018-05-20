@@ -35,10 +35,7 @@ import task.mozilla9025.com.taskmanager.ui.activities.TaskEditActivity;
 import task.mozilla9025.com.taskmanager.ui.adapters.TasksAdapter;
 import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
 
-public class InboxFragment extends Fragment implements TasksAdapter.TaskClickListener,
-        ColorPickerDialog.ColorSelectCallback {
-
-    private static InboxFragment instance;
+public class InboxFragment extends Fragment implements TasksAdapter.TaskClickListener {
 
     @BindView(R.id.btn_add_task)
     ImageButton btnAdd;
@@ -94,7 +91,7 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     }
 
     @OnClick(R.id.btn_add_task)
-    void pickColor() {
+    void addTask() {
         if (TextUtils.isEmpty(String.valueOf(etTaskName.getText()))) {
             return;
         }
@@ -117,25 +114,6 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     @Override
     public void onDeleteClick(int pos) {
         showAlertAndDelete(pos);
-    }
-
-    @Override
-    public void onColorSelected(String hexColor) {
-        Log.d("COLOR", "onColorSelected: " + hexColor);
-    }
-
-    @Override
-    public void onCancel() {
-        Log.d("COLOR", "onCancel: ");
-    }
-
-    @Subscribe
-    public void onBusMessage(BusMessage msg) {
-        int eventId = msg.getEventId();
-        if (eventId == BusMessage.CREATE_TASK_ID) {
-            inboxTasks = realmManager.getInboxTasks(realm);
-            adapter.updateData(inboxTasks);
-        }
     }
 
     private void showAlertAndDelete(int pos) {

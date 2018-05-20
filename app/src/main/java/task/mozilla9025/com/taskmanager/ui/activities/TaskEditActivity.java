@@ -60,14 +60,22 @@ public class TaskEditActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         realm = Realm.getDefaultInstance();
+        realm.executeTransaction(tr -> {
+            tr.insertOrUpdate(Project.createInbox());
+        });
         RealmResults<Project> projects = new RealmManager().getProjects(realm);
-        spinnerProjects.setAdapter(new ProjectsDropDownAdapter(projects));
+        ProjectsDropDownAdapter adapter = new ProjectsDropDownAdapter(projects);
+        spinnerProjects.setAdapter(adapter);
 
         etDueDate.setText(task.getDueDate() != null ? DateUtils.formatDate(task.getDueDate()) : "Not selected");
         etScheduledTo.setText(task.getScheduledTo() != null ? DateUtils.formatDate(task.getScheduledTo()) : "Not selected");
 
         etTitle.setText(task.getTitle());
         etDescription.setText(task.getDescription() != null ? task.getDescription() : "");
+        if (task.getProjectId() != null) {
+            int selection = adapter.getPositionById(task.getProjectId());
+            spinnerProjects.setSelection(selection);
+        }
     }
 
     @OnClick(R.id.btn_task_edit_done)

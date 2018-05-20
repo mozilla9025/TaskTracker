@@ -56,6 +56,15 @@ public class ProjectsDropDownAdapter extends RealmBaseAdapter<Project> {
         return convertView;
     }
 
+    public int getPositionById(Integer projectId) {
+        for (int i = 0; i < adapterData.size(); i++) {
+            if (projectId.equals(getItem(i).getId())) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     private class ViewHolder {
         View viewColor;
         TextView tvName;

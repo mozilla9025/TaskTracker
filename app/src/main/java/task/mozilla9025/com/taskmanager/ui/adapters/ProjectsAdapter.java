@@ -45,7 +45,7 @@ public class ProjectsAdapter extends RealmRecyclerViewAdapter<Project, ProjectsA
         int pos = h.getAdapterPosition();
         Project project = projects.get(pos);
 
-        h.itemView.setOnClickListener(v -> clickListener.onTaskClick(pos));
+        h.itemView.setOnClickListener(v -> clickListener.onProjectClick(pos));
         h.btnEdit.setOnClickListener(v -> clickListener.onEditClick(pos));
         h.btnDelete.setOnClickListener(v -> clickListener.onDeleteClick(pos));
 
@@ -92,7 +92,7 @@ public class ProjectsAdapter extends RealmRecyclerViewAdapter<Project, ProjectsA
     }
 
     public interface ProjectClickListener {
-        void onTaskClick(int pos);
+        void onProjectClick(int pos);
 
         void onEditClick(int pos);
 

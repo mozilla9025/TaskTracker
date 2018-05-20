@@ -39,9 +39,19 @@ public class RealmManager {
         });
     }
 
-    public void storeTask(Realm realm, Task task) {
+    public void deleteProject(Realm realm, Integer id) {
         realm.executeTransaction(tr -> {
-            tr.insertOrUpdate(task);
+            tr.where(Task.class)
+                    .equalTo("projectId", id)
+                    .findAll()
+                    .createSnapshot()
+                    .deleteAllFromRealm();
+
+            tr.where(Project.class)
+                    .equalTo("id", id)
+                    .findAll()
+                    .createSnapshot()
+                    .deleteAllFromRealm();
         });
     }
 }

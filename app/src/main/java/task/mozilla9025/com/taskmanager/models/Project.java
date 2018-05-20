@@ -16,6 +16,14 @@ public class Project extends RealmObject {
     public Project() {
     }
 
+    public static Project createInbox() {
+        Project p = new Project();
+        p.name = "Inbox";
+        p.id = null;
+        p.created = System.currentTimeMillis() / 1000;
+        return p;
+    }
+
     public static Project createDefaultProject(String name) {
         Project p = new Project();
         p.name = name;
