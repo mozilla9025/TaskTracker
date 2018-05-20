@@ -30,7 +30,7 @@ public final class JsonParser {
                 Integer id = temp.getInt("id");
                 String title = temp.getString("title");
                 String color = temp.getString("color");
-                String description = temp.getString("description");
+                String description = temp.isNull("description") ? null : temp.getString("description");
                 Long scheduledTo = temp.isNull("scheduled_to") ? null : temp.getLong("scheduled_to");
                 Long dueDate = temp.isNull("due_date") ? null : temp.getLong("due_date");
                 Long created = temp.getLong("created_at");
@@ -53,6 +53,21 @@ public final class JsonParser {
         Long dueDate = temp.getLong("due_date");
         Long created = temp.getLong("created_at");
         Integer projectId = temp.getInt("project_id");
+        return Task.createCompleteTask(id, title, color, description,
+                scheduledTo, dueDate, created, projectId);
+    }
+
+    public Task parseTaskByField(String s, String field) throws JSONException {
+        JSONObject json = new JSONObject(s);
+        JSONObject temp = json.getJSONObject(field);
+        Integer id = temp.getInt("id");
+        String title = temp.getString("title");
+        String color = temp.getString("color");
+        String description = temp.isNull("description") ? null : temp.getString("description");
+        Long scheduledTo = temp.isNull("scheduled_to") ? null : temp.getLong("scheduled_to");
+        Long dueDate = temp.isNull("due_date") ? null : temp.getLong("due_date");
+        Long created = temp.getLong("created_at");
+        Integer projectId = temp.isNull("project_id") ? null : temp.getInt("project_id");
         return Task.createCompleteTask(id, title, color, description,
                 scheduledTo, dueDate, created, projectId);
     }

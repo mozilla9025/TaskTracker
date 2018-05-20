@@ -1,19 +1,24 @@
 package task.mozilla9025.com.taskmanager.ui.fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+
+import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +33,7 @@ import task.mozilla9025.com.taskmanager.preferences.PreferencesHelper;
 import task.mozilla9025.com.taskmanager.realm.RealmManager;
 import task.mozilla9025.com.taskmanager.ui.activities.TaskEditActivity;
 import task.mozilla9025.com.taskmanager.ui.adapters.TasksAdapter;
+import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
 
 public class InboxFragment extends Fragment implements TasksAdapter.TaskClickListener,
         ColorPickerDialog.ColorSelectCallback {
@@ -42,6 +48,7 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     RecyclerView rvInbox;
 
     private Realm realm;
+    private RealmManager realmManager;
     private TasksAdapter adapter;
     private RealmResults<Task> inboxTasks;
     private TaskApiController taskApiController;
@@ -67,9 +74,10 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
         accessToken = new PreferencesHelper(getContext()).getAccessToken();
         taskApiController = new TaskApiController(accessToken);
         realm = Realm.getDefaultInstance();
+        realmManager = new RealmManager();
         taskApiController.getTasksInInbox(20, 0);
         if (inboxTasks == null) {
-            inboxTasks = new RealmManager().getInboxTasks(realm);
+            inboxTasks = realmManager.getInboxTasks(realm);
         }
         adapter = new TasksAdapter(this, inboxTasks);
         rvInbox.setAdapter(adapter);
@@ -87,7 +95,12 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
 
     @OnClick(R.id.btn_add_task)
     void pickColor() {
-        new ColorPickerDialog(this).show();
+        if (TextUtils.isEmpty(String.valueOf(etTaskName.getText()))) {
+            return;
+        }
+        Task task = Task.createTaskInInbox(String.valueOf(etTaskName.getText()));
+        taskApiController.createTaskInInbox(task.getTitle());
+        etTaskName.setText("");
     }
 
     @Override
@@ -103,7 +116,7 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
 
     @Override
     public void onDeleteClick(int pos) {
-
+        showAlertAndDelete(pos);
     }
 
     @Override
@@ -115,4 +128,35 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     public void onCancel() {
         Log.d("COLOR", "onCancel: ");
     }
+
+    @Subscribe
+    public void onBusMessage(BusMessage msg) {
+        int eventId = msg.getEventId();
+        if (eventId == BusMessage.CREATE_TASK_ID) {
+            inboxTasks = realmManager.getInboxTasks(realm);
+        }
+    }
+
+    private void showAlertAndDelete(int pos) {
+        AlertDialog builder = new AlertDialog.Builder(getContext()).create();
+        builder.setTitle("Confirm");
+        builder.setMessage("Delete task \"" + adapter.getItem(pos).getTitle() + "\"?");
+        builder.setButton(AlertDialog.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Integer id = adapter.getItem(pos).getId();
+                taskApiController.deleteTask(id);
+                realmManager.deleteTask(realm, id);
+                inboxTasks = realmManager.getInboxTasks(realm);
+            }
+        });
+        builder.show();
+    }
+
 }

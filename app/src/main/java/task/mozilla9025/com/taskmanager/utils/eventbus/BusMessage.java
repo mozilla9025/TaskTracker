@@ -54,4 +54,12 @@ public class BusMessage {
         this.error = false;
         return this;
     }
+
+    public boolean isError() {
+        return error;
+    }
+
+    public int getEventId() {
+        return eventId;
+    }
 }

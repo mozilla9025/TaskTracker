@@ -23,4 +23,20 @@ public class RealmManager {
                 .sort("created", Sort.ASCENDING)
                 .findAll();
     }
+
+    public void deleteTask(Realm realm, Integer taskId) {
+        realm.executeTransaction(tr -> {
+            tr.where(Task.class)
+                    .equalTo("id", taskId)
+                    .findAll()
+                    .createSnapshot()
+                    .deleteAllFromRealm();
+        });
+    }
+
+    public void storeTask(Realm realm, Task task) {
+        realm.executeTransaction(tr -> {
+            tr.insertOrUpdate(task);
+        });
+    }
 }
