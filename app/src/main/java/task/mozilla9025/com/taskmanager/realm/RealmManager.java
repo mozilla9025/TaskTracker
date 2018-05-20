@@ -21,11 +21,18 @@ public class RealmManager {
         return tasks;
     }
 
-    public RealmResults<Project> getProjects(Realm realm) {
-        RealmResults<Project> projects = realm.where(Project.class)
-                .sort("created", Sort.DESCENDING)
-                .findAll();
-
+    public RealmResults<Project> getProjects(Realm realm, boolean showInbox) {
+        RealmResults<Project> projects;
+        if (showInbox) {
+            projects = realm.where(Project.class)
+                    .sort("created", Sort.DESCENDING)
+                    .findAll();
+        } else {
+            projects = realm.where(Project.class)
+                    .isNotNull("id")
+                    .sort("created", Sort.DESCENDING)
+                    .findAll();
+        }
         projects.createSnapshot();
         return projects;
     }

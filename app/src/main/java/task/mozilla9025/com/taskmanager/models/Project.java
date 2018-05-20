@@ -1,9 +1,12 @@
 package task.mozilla9025.com.taskmanager.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Project extends RealmObject {
+public class Project extends RealmObject implements Parcelable {
 
     @PrimaryKey
     private Integer id;
@@ -89,4 +92,56 @@ public class Project extends RealmObject {
     public void setTaskCount(Integer taskCount) {
         this.taskCount = taskCount;
     }
+
+    protected Project(Parcel in) {
+        id = in.readByte() == 0x00 ? null : in.readInt();
+        name = in.readString();
+        description = in.readString();
+        color = in.readString();
+        created = in.readByte() == 0x00 ? null : in.readLong();
+        taskCount = in.readByte() == 0x00 ? null : in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(id);
+        }
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeString(color);
+        if (created == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeLong(created);
+        }
+        if (taskCount == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(taskCount);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Project> CREATOR = new Parcelable.Creator<Project>() {
+        @Override
+        public Project createFromParcel(Parcel in) {
+            return new Project(in);
+        }
+
+        @Override
+        public Project[] newArray(int size) {
+            return new Project[size];
+        }
+    };
 }

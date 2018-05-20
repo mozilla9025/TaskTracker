@@ -3,14 +3,13 @@ package task.mozilla9025.com.taskmanager.ui.activities;
 import android.app.DatePickerDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.DatePicker;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +19,10 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import task.mozilla9025.com.taskmanager.R;
+import task.mozilla9025.com.taskmanager.api.TaskApiController;
 import task.mozilla9025.com.taskmanager.models.Project;
 import task.mozilla9025.com.taskmanager.models.Task;
+import task.mozilla9025.com.taskmanager.preferences.PreferencesHelper;
 import task.mozilla9025.com.taskmanager.realm.RealmManager;
 import task.mozilla9025.com.taskmanager.ui.adapters.ProjectsDropDownAdapter;
 import task.mozilla9025.com.taskmanager.utils.DateUtils;
@@ -47,40 +48,69 @@ public class TaskEditActivity extends AppCompatActivity {
     @BindView(R.id.btn_task_edit_done)
     ImageButton btnDone;
 
+    private Task intentTask;
     private Realm realm;
+    private String title;
+    private String description;
     private Integer scheduledTo;
     private Integer dueDate;
+    private Integer projectId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_edit);
 
-        Task task = getIntent().getParcelableExtra("task");
+        intentTask = getIntent().getParcelableExtra("task");
 
         ButterKnife.bind(this);
         realm = Realm.getDefaultInstance();
+
         realm.executeTransaction(tr -> {
             tr.insertOrUpdate(Project.createInbox());
         });
-        RealmResults<Project> projects = new RealmManager().getProjects(realm);
+        RealmResults<Project> projects = new RealmManager().getProjects(realm, true);
         ProjectsDropDownAdapter adapter = new ProjectsDropDownAdapter(projects);
         spinnerProjects.setAdapter(adapter);
+        spinnerProjects.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                projectId = adapter.getItem(position).getId();
+            }
 
-        etDueDate.setText(task.getDueDate() != null ? DateUtils.formatDate(task.getDueDate()) : "Not selected");
-        etScheduledTo.setText(task.getScheduledTo() != null ? DateUtils.formatDate(task.getScheduledTo()) : "Not selected");
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-        etTitle.setText(task.getTitle());
-        etDescription.setText(task.getDescription() != null ? task.getDescription() : "");
-        if (task.getProjectId() != null) {
-            int selection = adapter.getPositionById(task.getProjectId());
+            }
+        });
+
+        etDueDate.setText(intentTask.getDueDate() != null ? DateUtils.formatDate(intentTask.getDueDate()) : "Not selected");
+        etScheduledTo.setText(intentTask.getScheduledTo() != null ? DateUtils.formatDate(intentTask.getScheduledTo()) : "Not selected");
+
+        etTitle.setText(intentTask.getTitle());
+        etDescription.setText(intentTask.getDescription() != null ? intentTask.getDescription() : "");
+        if (intentTask.getProjectId() != null) {
+            int selection = adapter.getPositionById(intentTask.getProjectId());
             spinnerProjects.setSelection(selection);
         }
     }
 
     @OnClick(R.id.btn_task_edit_done)
     void saveEditedTask() {
+        title = String.valueOf(etTitle.getText());
+        description = String.valueOf(etDescription.getText());
 
+        String accessToken = new PreferencesHelper(this).getAccessToken();
+        Task taskToUpdate = Task.create();
+        taskToUpdate.setId(intentTask.getId());
+        taskToUpdate.setTitle(title);
+        taskToUpdate.setDescription(description);
+        taskToUpdate.setProjectId(projectId);
+        taskToUpdate.setDueDate(dueDate);
+        taskToUpdate.setScheduledTo(scheduledTo);
+
+        new TaskApiController(accessToken).updateTask(taskToUpdate);
+        finish();
     }
 
     @OnClick(R.id.btn_task_edit_back)

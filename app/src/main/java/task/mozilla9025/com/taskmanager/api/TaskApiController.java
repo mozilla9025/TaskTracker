@@ -1,5 +1,7 @@
 package task.mozilla9025.com.taskmanager.api;
 
+import android.util.Log;
+
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -129,7 +131,7 @@ public final class TaskApiController {
                     return;
                 }
                 try {
-                    Task task = parser.parseTaskByField(responseStr,"result");
+                    Task task = parser.parseTaskByField(responseStr, "result");
                     try (Realm realm = Realm.getDefaultInstance()) {
                         realm.executeTransaction(tr -> {
                             tr.insertOrUpdate(task);
@@ -183,39 +185,47 @@ public final class TaskApiController {
         });
     }
 
-    public void editTask(Integer taskId, String property, String value) {
-        tasksApi.editTask(accessToken, taskId, property, value).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (!response.isSuccessful()) {
-                    GlobalBus.getBus().post(new BusMessage().error());
-                    return;
-                }
-                String responseStr = null;
-                try {
-                    responseStr = response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return;
-                }
-                try {
-                    Task task = parser.parseTask(responseStr);
-                    try (Realm realm = Realm.getDefaultInstance()) {
-                        realm.executeTransaction(tr -> {
-                            tr.insertOrUpdate(task);
-                        });
+    public void updateTask(Task taskToUpdate) {
+        Integer taskId = taskToUpdate.getId();
+        String title = taskToUpdate.getTitle();
+        String description = taskToUpdate.getDescription();
+        Integer projectId = taskToUpdate.getProjectId();
+        Integer scheduledTo = taskToUpdate.getScheduledTo();
+        Integer dueDate = taskToUpdate.getDueDate();
+        tasksApi.update(accessToken, taskId, title, description, projectId, scheduledTo, dueDate)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (!response.isSuccessful()) {
+                            GlobalBus.getBus().post(new BusMessage().error());
+                            return;
+                        }
+                        String responseStr = null;
+                        try {
+                            responseStr = response.body().string();
+                            Log.i("TASK UPDATE", "onResponse: "+responseStr);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+                        try {
+                            Task task = parser.parseTask(responseStr);
+                            try (Realm realm = Realm.getDefaultInstance()) {
+                                realm.executeTransaction(tr -> {
+                                    tr.insertOrUpdate(task);
+                                });
+                            }
+                            GlobalBus.getBus().post(new BusMessage().taskEdited());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    GlobalBus.getBus().post(new BusMessage().taskEdited());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                call.clone().enqueue(this);
-            }
-        });
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        call.clone().enqueue(this);
+                    }
+                });
     }
 
     public void deleteTask(Integer taskId) {

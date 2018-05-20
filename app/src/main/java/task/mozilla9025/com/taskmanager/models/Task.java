@@ -18,14 +18,18 @@ public class Task extends RealmObject implements Parcelable {
     @Nullable
     private String description;
     @Nullable
-    private Long scheduledTo;
+    private Integer scheduledTo;
     @Nullable
-    private Long dueDate;
+    private Integer dueDate;
     @Nullable
     private Integer projectId;
-    private Long created;
+    private Integer created;
 
     public Task() {
+    }
+
+    public static Task create() {
+        return new Task();
     }
 
     public static Task createTaskInInbox(String title) {
@@ -41,8 +45,8 @@ public class Task extends RealmObject implements Parcelable {
     }
 
     public static Task createCompleteTask(Integer id, String title, String color,
-                                          String description, Long scheduledTo,
-                                          Long dueDate, Long created, Integer projectId) {
+                                          String description, Integer scheduledTo,
+                                          Integer dueDate, Integer created, Integer projectId) {
         Task t = new Task();
         t.id = id;
         t.title = title;
@@ -89,20 +93,20 @@ public class Task extends RealmObject implements Parcelable {
     }
 
     @Nullable
-    public Long getScheduledTo() {
+    public Integer getScheduledTo() {
         return scheduledTo;
     }
 
-    public void setScheduledTo(@Nullable Long scheduledTo) {
+    public void setScheduledTo(@Nullable Integer scheduledTo) {
         this.scheduledTo = scheduledTo;
     }
 
     @Nullable
-    public Long getDueDate() {
+    public Integer getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(@Nullable Long dueDate) {
+    public void setDueDate(@Nullable Integer dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -115,11 +119,11 @@ public class Task extends RealmObject implements Parcelable {
         this.projectId = projectId;
     }
 
-    public Long getCreated() {
+    public Integer getCreated() {
         return created;
     }
 
-    public void setCreated(Long created) {
+    public void setCreated(Integer created) {
         this.created = created;
     }
 
@@ -128,10 +132,10 @@ public class Task extends RealmObject implements Parcelable {
         title = in.readString();
         color = in.readString();
         description = in.readString();
-        scheduledTo = in.readByte() == 0x00 ? null : in.readLong();
-        dueDate = in.readByte() == 0x00 ? null : in.readLong();
+        scheduledTo = in.readByte() == 0x00 ? null : in.readInt();
+        dueDate = in.readByte() == 0x00 ? null : in.readInt();
         projectId = in.readByte() == 0x00 ? null : in.readInt();
-        created = in.readByte() == 0x00 ? null : in.readLong();
+        created = in.readByte() == 0x00 ? null : in.readInt();
     }
 
     @Override
@@ -154,13 +158,13 @@ public class Task extends RealmObject implements Parcelable {
             dest.writeByte((byte) (0x00));
         } else {
             dest.writeByte((byte) (0x01));
-            dest.writeLong(scheduledTo);
+            dest.writeInt(scheduledTo);
         }
         if (dueDate == null) {
             dest.writeByte((byte) (0x00));
         } else {
             dest.writeByte((byte) (0x01));
-            dest.writeLong(dueDate);
+            dest.writeInt(dueDate);
         }
         if (projectId == null) {
             dest.writeByte((byte) (0x00));
@@ -172,7 +176,7 @@ public class Task extends RealmObject implements Parcelable {
             dest.writeByte((byte) (0x00));
         } else {
             dest.writeByte((byte) (0x01));
-            dest.writeLong(created);
+            dest.writeInt(created);
         }
     }
 

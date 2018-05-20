@@ -17,7 +17,7 @@ public interface TasksApi {
     @FormUrlEncoded
     @POST("tasks")
     Call<ResponseBody> tasksInProject(@Field("access_token") String accessToken,
-                                      @Field("project_id") int projectId,
+                                      @Field("project_id") Integer projectId,
                                       @Field("limit") int limit,
                                       @Field("offset") int offset);
 
@@ -33,16 +33,19 @@ public interface TasksApi {
                                            @Field("name") String title);
 
     @FormUrlEncoded
-    @POST("task/edit")
-    Call<ResponseBody> editTask(@Field("access_token") String accessToken,
-                                @Field("task_id") int taskId,
-                                @Field("prop") String property,
-                                @Field("value") String value);
+    @POST("task/update")
+    Call<ResponseBody> update(@Field("access_token") String accessToken,
+                              @Field("task_id") Integer taskId,
+                              @Field("title") String title,
+                              @Field("description") String description,
+                              @Field("project_id") Integer projectId,
+                              @Field("scheduled_to") Integer scheduledTo,
+                              @Field("due_date") Integer dueDate);
 
     @FormUrlEncoded
     @POST("task/delete")
     Call<ResponseBody> deleteTask(@Field("access_token") String accessToken,
-                                  @Field("task_id") int taskId);
+                                  @Field("task_id") Integer taskId);
 
 
 }

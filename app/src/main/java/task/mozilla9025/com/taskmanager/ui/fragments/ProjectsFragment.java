@@ -1,6 +1,7 @@
 package task.mozilla9025.com.taskmanager.ui.fragments;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,8 +17,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.squareup.otto.Subscribe;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -25,14 +24,12 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import task.mozilla9025.com.taskmanager.R;
 import task.mozilla9025.com.taskmanager.api.ProjectApiController;
-import task.mozilla9025.com.taskmanager.api.TaskApiController;
 import task.mozilla9025.com.taskmanager.models.Project;
-import task.mozilla9025.com.taskmanager.models.Task;
 import task.mozilla9025.com.taskmanager.preferences.PreferencesHelper;
 import task.mozilla9025.com.taskmanager.realm.RealmManager;
+import task.mozilla9025.com.taskmanager.ui.activities.ProjectActivity;
+import task.mozilla9025.com.taskmanager.ui.activities.ProjectEditActivity;
 import task.mozilla9025.com.taskmanager.ui.adapters.ProjectsAdapter;
-import task.mozilla9025.com.taskmanager.ui.adapters.TasksAdapter;
-import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
 
 public class ProjectsFragment extends Fragment implements ProjectsAdapter.ProjectClickListener {
 
@@ -73,7 +70,7 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
         realm = Realm.getDefaultInstance();
         realmManager = new RealmManager();
         if (projects == null) {
-            projects = realmManager.getProjects(realm);
+            projects = realmManager.getProjects(realm, false);
         }
         adapter = new ProjectsAdapter(this, projects);
         rvProjects.setAdapter(adapter);
@@ -91,12 +88,14 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
 
     @Override
     public void onProjectClick(int pos) {
-
+        startActivity(new Intent(getContext(), ProjectActivity.class)
+                .putExtra("project", adapter.getItem(pos)));
     }
 
     @Override
     public void onEditClick(int pos) {
-
+        startActivity(new Intent(getContext(), ProjectEditActivity.class)
+                .putExtra("project", adapter.getItem(pos)));
     }
 
     @Override
@@ -123,7 +122,6 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
             Integer id = adapter.getItem(pos).getId();
             projectApiController.deleteProject(id);
             realmManager.deleteProject(realm, id);
-            projects = realmManager.getProjects(realm);
             adapter.updateData(projects);
         });
         builder.show();
