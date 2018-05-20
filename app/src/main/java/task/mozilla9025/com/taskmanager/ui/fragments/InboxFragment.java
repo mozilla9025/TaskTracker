@@ -134,6 +134,7 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
         int eventId = msg.getEventId();
         if (eventId == BusMessage.CREATE_TASK_ID) {
             inboxTasks = realmManager.getInboxTasks(realm);
+            adapter.updateData(inboxTasks);
         }
     }
 
@@ -141,20 +142,13 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
         AlertDialog builder = new AlertDialog.Builder(getContext()).create();
         builder.setTitle("Confirm");
         builder.setMessage("Delete task \"" + adapter.getItem(pos).getTitle() + "\"?");
-        builder.setButton(AlertDialog.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Integer id = adapter.getItem(pos).getId();
-                taskApiController.deleteTask(id);
-                realmManager.deleteTask(realm, id);
-                inboxTasks = realmManager.getInboxTasks(realm);
-            }
+        builder.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+        builder.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+            Integer id = adapter.getItem(pos).getId();
+            taskApiController.deleteTask(id);
+            realmManager.deleteTask(realm, id);
+            inboxTasks = realmManager.getInboxTasks(realm);
+            adapter.updateData(inboxTasks);
         });
         builder.show();
     }

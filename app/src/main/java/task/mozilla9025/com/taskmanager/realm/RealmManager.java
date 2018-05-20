@@ -12,16 +12,22 @@ public class RealmManager {
     }
 
     public RealmResults<Task> getInboxTasks(Realm realm) {
-        return realm.where(Task.class)
+        RealmResults<Task> tasks = realm.where(Task.class)
                 .isNull("projectId")
-                .sort("created", Sort.ASCENDING)
+                .sort("created", Sort.DESCENDING)
                 .findAll();
+
+        tasks.createSnapshot();
+        return tasks;
     }
 
     public RealmResults<Project> getProjects(Realm realm) {
-        return realm.where(Project.class)
-                .sort("created", Sort.ASCENDING)
+        RealmResults<Project> projects = realm.where(Project.class)
+                .sort("created", Sort.DESCENDING)
                 .findAll();
+
+        projects.createSnapshot();
+        return projects;
     }
 
     public void deleteTask(Realm realm, Integer taskId) {
@@ -29,7 +35,6 @@ public class RealmManager {
             tr.where(Task.class)
                     .equalTo("id", taskId)
                     .findAll()
-                    .createSnapshot()
                     .deleteAllFromRealm();
         });
     }
