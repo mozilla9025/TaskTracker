@@ -61,4 +61,11 @@ public class RealmManager {
                     .deleteAllFromRealm();
         });
     }
+
+    public RealmResults<Task> getProjectTasks(Realm realm, Integer projectId) {
+        return realm.where(Task.class)
+                .equalTo("projectId", projectId)
+                .sort("dueDate", Sort.ASCENDING)
+                .findAll();
+    }
 }

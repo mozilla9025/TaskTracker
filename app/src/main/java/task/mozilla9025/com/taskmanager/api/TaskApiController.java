@@ -166,7 +166,7 @@ public final class TaskApiController {
                     return;
                 }
                 try {
-                    Task task = parser.parseTask(responseStr);
+                    Task task = parser.parseTaskByField(responseStr,"result");
                     try (Realm realm = Realm.getDefaultInstance()) {
                         realm.executeTransaction(tr -> {
                             tr.insertOrUpdate(task);
