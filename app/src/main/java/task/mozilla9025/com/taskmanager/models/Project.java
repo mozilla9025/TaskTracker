@@ -13,17 +13,21 @@ public class Project extends RealmObject implements Parcelable {
     private String name;
     private String description;
     private String color;
-    private Long created;
+    private Integer created;
     private Integer taskCount;
 
     public Project() {
+    }
+
+    public static Project create() {
+        return new Project();
     }
 
     public static Project createInbox() {
         Project p = new Project();
         p.name = "Inbox";
         p.id = null;
-        p.created = System.currentTimeMillis() / 1000;
+        p.created = (int) System.currentTimeMillis() / 1000;
         return p;
     }
 
@@ -34,7 +38,7 @@ public class Project extends RealmObject implements Parcelable {
     }
 
     public static Project createCompleteProject(Integer id, String name, String description,
-                                                String color, Long created, Integer taskCount) {
+                                                String color, Integer created, Integer taskCount) {
         Project p = new Project();
         p.id = id;
         p.name = name;
@@ -77,11 +81,11 @@ public class Project extends RealmObject implements Parcelable {
         this.color = color;
     }
 
-    public Long getCreated() {
+    public Integer getCreated() {
         return created;
     }
 
-    public void setCreated(Long created) {
+    public void setCreated(Integer created) {
         this.created = created;
     }
 
@@ -98,7 +102,7 @@ public class Project extends RealmObject implements Parcelable {
         name = in.readString();
         description = in.readString();
         color = in.readString();
-        created = in.readByte() == 0x00 ? null : in.readLong();
+        created = in.readByte() == 0x00 ? null : in.readInt();
         taskCount = in.readByte() == 0x00 ? null : in.readInt();
     }
 

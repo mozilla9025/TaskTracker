@@ -192,40 +192,40 @@ public final class TaskApiController {
         Integer projectId = taskToUpdate.getProjectId();
         Integer scheduledTo = taskToUpdate.getScheduledTo();
         Integer dueDate = taskToUpdate.getDueDate();
-        tasksApi.update(accessToken, taskId, title, description, projectId, scheduledTo, dueDate)
-                .enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (!response.isSuccessful()) {
-                            GlobalBus.getBus().post(new BusMessage().error());
-                            return;
-                        }
-                        String responseStr = null;
-                        try {
-                            responseStr = response.body().string();
-                            Log.i("TASK UPDATE", "onResponse: "+responseStr);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                        try {
-                            Task task = parser.parseTask(responseStr);
-                            try (Realm realm = Realm.getDefaultInstance()) {
-                                realm.executeTransaction(tr -> {
-                                    tr.insertOrUpdate(task);
-                                });
-                            }
-                            GlobalBus.getBus().post(new BusMessage().taskEdited());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+        tasksApi.update(accessToken, taskId, title, description,
+                projectId, scheduledTo, dueDate).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (!response.isSuccessful()) {
+                    GlobalBus.getBus().post(new BusMessage().error());
+                    return;
+                }
+                String responseStr = null;
+                try {
+                    responseStr = response.body().string();
+                    Log.i("TASK UPDATE", "onResponse: " + responseStr);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                try {
+                    Task task = parser.parseTask(responseStr);
+                    try (Realm realm = Realm.getDefaultInstance()) {
+                        realm.executeTransaction(tr -> {
+                            tr.insertOrUpdate(task);
+                        });
                     }
+                    GlobalBus.getBus().post(new BusMessage().taskEdited());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        call.clone().enqueue(this);
-                    }
-                });
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                call.clone().enqueue(this);
+            }
+        });
     }
 
     public void deleteTask(Integer taskId) {

@@ -83,8 +83,8 @@ public final class JsonParser {
                 String name = temp.getString("name");
                 String description = temp.isNull("description") ? null : temp.getString("description");
                 String color = temp.isNull("color") ? null : temp.getString("color");
-                Long created = temp.getLong("created_at");
-                Integer taskCount = temp.getInt("task_count");
+                Integer created = temp.getInt("created_at");
+                Integer taskCount = temp.has("task_count") ? temp.getInt("task_count") : 0;
                 projects.add(Project.createCompleteProject(id, name, description,
                         color, created, taskCount));
             }
@@ -97,9 +97,9 @@ public final class JsonParser {
         JSONObject temp = json.getJSONObject("project");
         Integer id = temp.getInt("id");
         String name = temp.getString("name");
-        String description = temp.getString("description");
-        String color = temp.getString("color");
-        Long created = temp.getLong("created_at");
+        String description = temp.isNull("description") ? null : temp.getString("description");
+        String color = temp.isNull("color") ? null : temp.getString("color");
+        Integer created = temp.getInt("created_at");
         Integer taskCount = temp.has("task_count") ? temp.getInt("task_count") : 0;
         return Project.createCompleteProject(id, name, description,
                 color, created, taskCount);

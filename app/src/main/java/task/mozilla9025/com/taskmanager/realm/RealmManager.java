@@ -25,7 +25,7 @@ public class RealmManager {
         RealmResults<Project> projects;
         if (showInbox) {
             projects = realm.where(Project.class)
-                    .sort("created", Sort.DESCENDING)
+                    .sort("created", Sort.ASCENDING)
                     .findAll();
         } else {
             projects = realm.where(Project.class)

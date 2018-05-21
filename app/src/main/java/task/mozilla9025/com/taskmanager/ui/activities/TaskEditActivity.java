@@ -1,8 +1,12 @@
 package task.mozilla9025.com.taskmanager.ui.activities;
 
 import android.app.DatePickerDialog;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -47,6 +51,8 @@ public class TaskEditActivity extends AppCompatActivity {
     ImageButton btnBack;
     @BindView(R.id.btn_task_edit_done)
     ImageButton btnDone;
+    @BindView(R.id.toolbar_task_edit)
+    Toolbar toolbar;
 
     private Task intentTask;
     private Realm realm;
@@ -69,6 +75,17 @@ public class TaskEditActivity extends AppCompatActivity {
         realm.executeTransaction(tr -> {
             tr.insertOrUpdate(Project.createInbox());
         });
+
+        if (intentTask.getColor() != null) {
+            try {
+                int color = Color.parseColor(intentTask.getColor());
+                toolbar.setBackgroundColor(color);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            }
+        }
+
         RealmResults<Project> projects = new RealmManager().getProjects(realm, true);
         ProjectsDropDownAdapter adapter = new ProjectsDropDownAdapter(projects);
         spinnerProjects.setAdapter(adapter);
@@ -93,10 +110,16 @@ public class TaskEditActivity extends AppCompatActivity {
             int selection = adapter.getPositionById(intentTask.getProjectId());
             spinnerProjects.setSelection(selection);
         }
+
+
     }
 
     @OnClick(R.id.btn_task_edit_done)
     void saveEditedTask() {
+        if (TextUtils.isEmpty(etTitle.getText())) {
+            etTitle.setError("Field can not be empty");
+            return;
+        }
         title = String.valueOf(etTitle.getText());
         description = String.valueOf(etDescription.getText());
 

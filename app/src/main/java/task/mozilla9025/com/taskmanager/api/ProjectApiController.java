@@ -1,5 +1,7 @@
 package task.mozilla9025.com.taskmanager.api;
 
+import android.util.Log;
+
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -114,8 +116,12 @@ public class ProjectApiController {
         });
     }
 
-    public void editProject(Integer projectId, String property, String value) {
-        projectApi.edit(accessToken, projectId, property, value).enqueue(new Callback<ResponseBody>() {
+    public void update(Project project) {
+        Integer id = project.getId();
+        String name = project.getName();
+        String description = project.getDescription();
+        String color = project.getColor();
+        projectApi.update(accessToken, id, name, description, color).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (!response.isSuccessful()) {

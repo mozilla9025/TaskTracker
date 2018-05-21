@@ -18,11 +18,12 @@ public interface ProjectApi {
                               @Field("name") String name);
 
     @FormUrlEncoded
-    @POST("project/edit")
-    Call<ResponseBody> edit(@Field("access_token") String accessToken,
-                            @Field("project_id") Integer projectId,
-                            @Field("prop") String property,
-                            @Field("value") String value);
+    @POST("project/update")
+    Call<ResponseBody> update(@Field("access_token") String accessToken,
+                              @Field("project_id") Integer projectId,
+                              @Field("name") String name,
+                              @Field("description") String description,
+                              @Field("color") String color);
 
     @FormUrlEncoded
     @POST("project/delete")

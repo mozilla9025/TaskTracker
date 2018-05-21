@@ -60,10 +60,10 @@ public class ProjectsAdapter extends RealmRecyclerViewAdapter<Project, ProjectsA
             try {
                 h.viewColor.getBackground().setColorFilter(Color.parseColor(project.getColor()), PorterDuff.Mode.SRC);
             } catch (IllegalArgumentException e) {
-                h.viewColor.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.grey), PorterDuff.Mode.SRC);
+                h.viewColor.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.colorWhite), PorterDuff.Mode.SRC);
             }
         } else {
-            h.viewColor.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.grey), PorterDuff.Mode.SRC);
+            h.viewColor.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.colorWhite), PorterDuff.Mode.SRC);
         }
     }
 

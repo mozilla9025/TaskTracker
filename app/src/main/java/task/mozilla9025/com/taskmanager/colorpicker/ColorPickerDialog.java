@@ -23,9 +23,9 @@ public class ColorPickerDialog {
     private ColorSelectCallback selectCallback;
     private List<ColorEntry> colorEntryList = new ArrayList<>();
 
-    public ColorPickerDialog(Fragment fragment) {
-        this.context = fragment.getContext();
-        this.selectCallback = (ColorSelectCallback) fragment;
+    public ColorPickerDialog(Context context) {
+        this.context = context;
+        this.selectCallback = (ColorSelectCallback) context;
         this.colorEntryList.addAll(Arrays.asList(new ColorEntry(ContextCompat.getColor(context, R.color.red)),
                 new ColorEntry(ContextCompat.getColor(context, R.color.pink)),
                 new ColorEntry(ContextCompat.getColor(context, R.color.purple)),
@@ -59,14 +59,20 @@ public class ColorPickerDialog {
         builder.setTitle("Color");
         builder.setPositiveButton("Select", (dialog, which) -> {
             if (adapter.getSelectedColor() == null)
-                selectCallback.onCancel();
+                dialog.dismiss();
             else
                 selectCallback.onColorSelected(intToHex(adapter.getSelectedColor().color));
             dialog.dismiss();
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> {
-            selectCallback.onCancel();
             dialog.dismiss();
+        });
+        builder.setNeutralButton("Clear color", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                selectCallback.onClearColor();
+                dialog.dismiss();
+            }
         });
         builder.show();
     }
@@ -78,7 +84,7 @@ public class ColorPickerDialog {
     public interface ColorSelectCallback {
         void onColorSelected(String hexColor);
 
-        void onCancel();
+        void onClearColor();
     }
 
 }
