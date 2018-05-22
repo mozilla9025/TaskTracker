@@ -34,6 +34,7 @@ import task.mozilla9025.com.taskmanager.realm.RealmManager;
 import task.mozilla9025.com.taskmanager.ui.activities.TaskEditActivity;
 import task.mozilla9025.com.taskmanager.ui.adapters.TasksAdapter;
 import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
+import task.mozilla9025.com.taskmanager.utils.eventbus.GlobalBus;
 
 public class InboxFragment extends Fragment implements TasksAdapter.TaskClickListener {
 
@@ -67,6 +68,7 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     @Override
     public void onStart() {
         super.onStart();
+        GlobalBus.getBus().register(this);
         new PreferencesHelper(getContext()).setAccessToken("Ac2QaxlCgC6oLS7QDNVHAL33nGFvhHoZvRCuX8nIaXuCr4MJzs5j6zpFzpiwEpEG");
         accessToken = new PreferencesHelper(getContext()).getAccessToken();
         taskApiController = new TaskApiController(accessToken);
@@ -79,6 +81,12 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
         adapter = new TasksAdapter(this, inboxTasks);
         rvInbox.setAdapter(adapter);
         rvInbox.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        GlobalBus.getBus().unregister(this);
     }
 
     @Override
@@ -114,6 +122,15 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     @Override
     public void onDeleteClick(int pos) {
         showAlertAndDelete(pos);
+    }
+
+    @Subscribe
+    public void onBusMessage(BusMessage msg) {
+        int eventId = msg.getEventId();
+        if (eventId == BusMessage.DELETE_TASK_ID) {
+            inboxTasks = realmManager.getInboxTasks(realm);
+            adapter.updateData(inboxTasks);
+        }
     }
 
     private void showAlertAndDelete(int pos) {
