@@ -68,4 +68,12 @@ public class RealmManager {
                 .sort("dueDate", Sort.ASCENDING)
                 .findAll();
     }
+
+    public RealmResults<Task> getTasksWithDeadline(Realm realm) {
+        return realm.where(Task.class)
+                .isNotNull("dueDate")
+                .sort("dueDate", Sort.ASCENDING)
+                .findAll();
+    }
+
 }

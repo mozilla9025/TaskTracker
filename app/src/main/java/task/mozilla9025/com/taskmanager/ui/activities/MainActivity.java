@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_inbox) {
             commitFragmentTransaction(new InboxFragment());
         } else if (id == R.id.nav_workflow) {
-
+            commitFragmentTransaction(new WorkflowFragment());
         } else if (id == R.id.nav_projects) {
             commitFragmentTransaction(new ProjectsFragment());
         }
@@ -119,6 +119,8 @@ public class MainActivity extends AppCompatActivity
             title = "Inbox";
         } else if (fragment instanceof ProjectsFragment) {
             title = "Projects";
+        } else if (fragment instanceof WorkflowFragment) {
+            title = "Workflow";
         }
         tvTitle.setText(title);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
