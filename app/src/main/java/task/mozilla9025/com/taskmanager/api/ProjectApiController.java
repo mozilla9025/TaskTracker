@@ -7,8 +7,10 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -16,6 +18,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import task.mozilla9025.com.taskmanager.models.Project;
+import task.mozilla9025.com.taskmanager.models.Task;
 import task.mozilla9025.com.taskmanager.utils.JsonParser;
 import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
 import task.mozilla9025.com.taskmanager.utils.eventbus.GlobalBus;
@@ -139,6 +142,16 @@ public class ProjectApiController {
                     Project project = parser.parseProject(responseStr);
                     try (Realm realm = Realm.getDefaultInstance()) {
                         realm.executeTransaction(tr -> {
+                            String color = project.getColor();
+                            RealmResults<Task> tasks = tr.where(Task.class)
+                                    .equalTo("projectId", project.getId())
+                                    .findAll();
+
+                            for (Task task : tasks) {
+                                task.setColor(color);
+                            }
+                            project.setTaskCount(tasks.size());
+                            tr.insertOrUpdate(tasks);
                             tr.insertOrUpdate(project);
                         });
                     }

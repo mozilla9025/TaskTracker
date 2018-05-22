@@ -50,6 +50,8 @@ public class ProjectEditActivity extends AppCompatActivity implements ColorPicke
         intentProject = getIntent().getParcelableExtra("project");
         if (intentProject.getColor() != null) {
             try {
+                this.color = intentProject.getColor();
+
                 int color = Color.parseColor(intentProject.getColor());
                 toolbar.setBackgroundColor(color);
                 viewColor.setBackgroundColor(color);

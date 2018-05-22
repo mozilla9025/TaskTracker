@@ -11,11 +11,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+
+import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +33,8 @@ import task.mozilla9025.com.taskmanager.realm.RealmManager;
 import task.mozilla9025.com.taskmanager.ui.activities.ProjectActivity;
 import task.mozilla9025.com.taskmanager.ui.activities.ProjectEditActivity;
 import task.mozilla9025.com.taskmanager.ui.adapters.ProjectsAdapter;
+import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
+import task.mozilla9025.com.taskmanager.utils.eventbus.GlobalBus;
 
 public class ProjectsFragment extends Fragment implements ProjectsAdapter.ProjectClickListener {
 
@@ -63,6 +68,7 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
     @Override
     public void onStart() {
         super.onStart();
+        GlobalBus.getBus().register(this);
         new PreferencesHelper(getContext()).setAccessToken("Ac2QaxlCgC6oLS7QDNVHAL33nGFvhHoZvRCuX8nIaXuCr4MJzs5j6zpFzpiwEpEG");
         accessToken = new PreferencesHelper(getContext()).getAccessToken();
         projectApiController = new ProjectApiController(accessToken);
@@ -75,6 +81,12 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
         adapter = new ProjectsAdapter(this, projects);
         rvProjects.setAdapter(adapter);
         rvProjects.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        GlobalBus.getBus().unregister(this);
     }
 
     @Override
@@ -111,6 +123,17 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
         Project project = Project.createDefaultProject(String.valueOf(etProjectName.getText()));
         projectApiController.createProject(project.getName());
         etProjectName.setText("");
+    }
+
+    @Subscribe
+    public void onBusMessage(BusMessage msg) {
+        int eventId = msg.getEventId();
+        Log.d("EDITED", "onBusMessage: " + eventId);
+        if (eventId == BusMessage.PROJECT_EDITED_ID) {
+            projects = realmManager.getProjects(realm, false);
+            adapter.updateData(projects);
+            Log.d("PROJECTS", "onBusMessage: "+projects);
+        }
     }
 
     private void showAlertAndDelete(int pos) {

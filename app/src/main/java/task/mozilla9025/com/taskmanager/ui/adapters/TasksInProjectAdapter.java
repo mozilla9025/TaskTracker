@@ -71,7 +71,11 @@ public class TasksInProjectAdapter extends RealmRecyclerViewAdapter<Task, TasksI
 
         h.tvCreated.setText("Created: " + DateUtils.formatDate(task.getCreated()));
 
-        h.viewColor.setBackgroundColor(Color.parseColor(task.getColor()));
+        if (task.getColor() != null) {
+            h.viewColor.setBackgroundColor(Color.parseColor(task.getColor()));
+        } else {
+            h.viewColor.setBackgroundColor(Color.parseColor("#ffffff"));
+        }
     }
 
     @Override

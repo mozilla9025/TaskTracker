@@ -81,7 +81,7 @@
                     android:layout_margin="4dp"
                     android:background="@drawable/btn_circle_shape"
                     android:src="@drawable/ic_edit"
-                    android:tint="@color/colorPrimaryDark" />
+                    android:tint="@color/colorPrimary" />
 
                 <ImageButton
                     android:id="@+id/btn_delete_project"
@@ -89,7 +89,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/btn_circle_shape"
                     android:src="@drawable/ic_delete"
-                    android:tint="@color/colorRed" />
+                    android:tint="@color/red" />
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>
 

@@ -148,4 +148,9 @@ public class Project extends RealmObject implements Parcelable {
             return new Project[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return id + "  " + name + " " + taskCount;
+    }
 }
