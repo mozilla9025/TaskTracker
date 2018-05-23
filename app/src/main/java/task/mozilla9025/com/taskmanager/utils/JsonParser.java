@@ -103,7 +103,12 @@ public final class JsonParser {
         Integer taskCount = temp.has("task_count") ? temp.getInt("task_count") : 0;
         return Project.createCompleteProject(id, name, description,
                 color, created, taskCount);
-
     }
 
+    public String parseAccessToken(String s) throws JSONException {
+        JSONObject json = new JSONObject(s);
+        return json.has("access_token") &&
+                !json.isNull("access_token") ?
+                json.getString("access_token") : null;
+    }
 }

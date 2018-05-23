@@ -16,14 +16,35 @@
         <activity android:name=".ui.activities.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.activities.StartActivity" />
         <activity
             android:name=".ui.activities.MainActivity"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="app.utarel.com"
+                    android:scheme="https" />
+                <data
+                    android:host="utarel.com"
+                    android:scheme="https" />
+                <data
+                    android:host="utarel.com"
+                    android:scheme="text/plain" />
+                <data
+                    android:host="app.utarel.com"
+                    android:scheme="text/plain" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".ui.activities.TaskEditActivity" />
         <activity android:name=".ui.activities.ProjectEditActivity" />
         <activity android:name=".ui.activities.ProjectActivity" />

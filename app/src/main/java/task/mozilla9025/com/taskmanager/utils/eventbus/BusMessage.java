@@ -12,6 +12,7 @@ public class BusMessage {
     public static final int PROJECT_EDITED_ID = 5;
     public static final int PROJECT_DELETED_ID = 6;
     public static final int CLICK_TASK_ID = 7;
+    public static final int LOG_IN_ID = 8;
 
     private boolean error;
     private int eventId;
@@ -81,6 +82,12 @@ public class BusMessage {
         return this;
     }
 
+    public BusMessage loggedIn() {
+        this.eventId = LOG_IN_ID;
+        this.error = false;
+        return this;
+    }
+
     public boolean isError() {
         return error;
     }
@@ -92,4 +99,5 @@ public class BusMessage {
     public Task getTask() {
         return task;
     }
+
 }

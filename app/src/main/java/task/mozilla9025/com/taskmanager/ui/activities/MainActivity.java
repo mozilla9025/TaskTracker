@@ -1,10 +1,13 @@
 package task.mozilla9025.com.taskmanager.ui.activities;
 
+import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -34,16 +38,23 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.tv_main_title)
     TextView tvTitle;
 
+    private LinearLayout llNavHeader;
     private String currentFragment;
     private InboxFragment inboxFragment;
     private WorkflowFragment workflowFragment;
     private ProjectsFragment projectsFragment;
+    private AnimationDrawable anim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        if (getIntent().getAction().equals(Intent.ACTION_VIEW)) {
+            Log.d("INTENT", "onCreate: " + getIntent());
+            Log.d("INTENT", "data: " + getIntent().getData());
+        }
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -51,12 +62,34 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
         navigationView.setNavigationItemSelectedListener(this);
+
+        llNavHeader = headerLayout.findViewById(R.id.ll_nav_header);
+
+        anim = (AnimationDrawable) llNavHeader.getBackground();
+        anim.setEnterFadeDuration(6000);
+        anim.setExitFadeDuration(6000);
+
 
         if (inboxFragment == null) {
             inboxFragment = new InboxFragment();
         }
         commitFragmentTransaction(inboxFragment);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (anim != null && !anim.isRunning())
+            anim.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (anim != null && anim.isRunning())
+            anim.stop();
     }
 
     @Override

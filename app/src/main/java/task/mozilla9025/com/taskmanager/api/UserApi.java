@@ -18,8 +18,10 @@ public interface UserApi {
     Call<ResponseBody> register(@Field("name") String name,
                                 @Field("surname") String surname,
                                 @Field("email") String email,
-                                @Field("registration_code") String code,
                                 @Field("password") String password);
 
+    @FormUrlEncoded
+    @POST("account-confirm")
+    Call<ResponseBody> confirmAccount(@Field("hash") String hash);
 
 }
