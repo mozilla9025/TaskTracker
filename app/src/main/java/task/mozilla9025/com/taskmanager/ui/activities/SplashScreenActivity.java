@@ -25,17 +25,17 @@ public class SplashScreenActivity extends AppCompatActivity {
         preferencesHelper = new PreferencesHelper(this);
         if (getIntent() != null
                 && getIntent().getAction() != null
-                && getIntent().getAction().equals(Intent.ACTION_VIEW)
-                && getIntent().getData() != null) {
+                && getIntent().getAction().equals(Intent.ACTION_VIEW)) {
             String hash = getIntent().getDataString().replace("https://utarel.com/account-confirm/", "");
-            Log.d("HASH", hash);
             new UserApiController(this).confirmRegistration(hash);
         } else {
             if (preferencesHelper.getAccessToken() == null) {
-                startActivity(new Intent(this, StartActivity.class));
+                startActivity(new Intent(this, StartActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                 finish();
             } else {
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                 finish();
             }
         }

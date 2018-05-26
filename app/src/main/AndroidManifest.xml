@@ -12,13 +12,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".ui.activities.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.SEND" />
 
@@ -42,13 +44,12 @@
 
         <activity android:name=".ui.activities.LoginActivity" />
         <activity android:name=".ui.activities.StartActivity" />
-        <activity
-            android:name=".ui.activities.MainActivity"
-            android:exported="true" />
+        <activity android:name=".ui.activities.MainActivity" />
         <activity android:name=".ui.activities.TaskEditActivity" />
         <activity android:name=".ui.activities.ProjectEditActivity" />
         <activity android:name=".ui.activities.ProjectActivity" />
         <activity android:name=".ui.activities.TaskActivity" />
+        <activity android:name=".ui.activities.RegisterActivity" />
     </application>
 
 </manifest>

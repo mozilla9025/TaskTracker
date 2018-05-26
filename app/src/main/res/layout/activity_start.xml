@@ -31,6 +31,7 @@
                 app:srcCompat="@drawable/ic_cloud_done" />
 
             <Button
+                android:id="@+id/btn_sign_in"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
@@ -40,6 +41,7 @@
                 android:textStyle="bold" />
 
             <Button
+                android:id="@+id/btn_sign_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"

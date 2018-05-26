@@ -69,7 +69,6 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
     public void onStart() {
         super.onStart();
         GlobalBus.getBus().register(this);
-        new PreferencesHelper(getContext()).setAccessToken("Ac2QaxlCgC6oLS7QDNVHAL33nGFvhHoZvRCuX8nIaXuCr4MJzs5j6zpFzpiwEpEG");
         accessToken = new PreferencesHelper(getContext()).getAccessToken();
         projectApiController = new ProjectApiController(accessToken);
         projectApiController.getProjects();

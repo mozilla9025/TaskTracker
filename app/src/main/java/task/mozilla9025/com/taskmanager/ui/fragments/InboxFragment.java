@@ -69,7 +69,6 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     public void onStart() {
         super.onStart();
         GlobalBus.getBus().register(this);
-        new PreferencesHelper(getContext()).setAccessToken("Ac2QaxlCgC6oLS7QDNVHAL33nGFvhHoZvRCuX8nIaXuCr4MJzs5j6zpFzpiwEpEG");
         accessToken = new PreferencesHelper(getContext()).getAccessToken();
         taskApiController = new TaskApiController(accessToken);
         realm = Realm.getDefaultInstance();
