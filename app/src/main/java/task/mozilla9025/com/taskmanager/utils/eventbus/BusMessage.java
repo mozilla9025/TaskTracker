@@ -1,5 +1,7 @@
 package task.mozilla9025.com.taskmanager.utils.eventbus;
 
+import com.squareup.otto.Bus;
+
 import task.mozilla9025.com.taskmanager.models.Task;
 
 public class BusMessage {
@@ -13,6 +15,8 @@ public class BusMessage {
     public static final int PROJECT_DELETED_ID = 6;
     public static final int CLICK_TASK_ID = 7;
     public static final int LOG_IN_ID = 8;
+    public static final int REGISTERED_ID = 9;
+    public static final int ACCOUNT_CONFIRMED_ID = 10;
 
     private boolean error;
     private int eventId;
@@ -88,6 +92,18 @@ public class BusMessage {
         return this;
     }
 
+    public BusMessage registered() {
+        this.eventId = REGISTERED_ID;
+        this.error = false;
+        return this;
+    }
+
+    public BusMessage confirmed() {
+        this.eventId = ACCOUNT_CONFIRMED_ID;
+        this.error = false;
+        return this;
+    }
+
     public boolean isError() {
         return error;
     }
@@ -99,5 +115,4 @@ public class BusMessage {
     public Task getTask() {
         return task;
     }
-
 }

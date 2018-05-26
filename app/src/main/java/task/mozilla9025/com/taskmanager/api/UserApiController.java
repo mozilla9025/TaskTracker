@@ -95,17 +95,15 @@ public final class UserApiController {
                     e.printStackTrace();
                     return;
                 }
-                String accessToken = null;
                 try {
-                    accessToken = parser.parseAccessToken(responseStr);
+                    if (parser.parseStatus(responseStr)) {
+                        GlobalBus.getBus().post(new BusMessage().registered());
+                    } else {
+                        GlobalBus.getBus().post(new BusMessage().error());
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if (accessToken == null) {
-                    return;
-                }
-                new PreferencesHelper(context).setAccessToken(accessToken);
-                GlobalBus.getBus().post(new BusMessage().loggedIn());
             }
 
             @Override
@@ -130,17 +128,8 @@ public final class UserApiController {
                     e.printStackTrace();
                     return;
                 }
-                String accessToken = null;
-                try {
-                    accessToken = parser.parseAccessToken(responseStr);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                if (accessToken == null) {
-                    return;
-                }
-                new PreferencesHelper(context).setAccessToken(accessToken);
-                GlobalBus.getBus().post(new BusMessage().loggedIn());
+
+                GlobalBus.getBus().post(new BusMessage().confirmed());
             }
 
             @Override

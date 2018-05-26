@@ -76,4 +76,9 @@ public class RealmManager {
                 .findAll();
     }
 
+    public void clearData(Realm realm) {
+        realm.executeTransaction(tr -> {
+            tr.deleteAll();
+        });
+    }
 }

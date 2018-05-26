@@ -3,27 +3,26 @@ package task.mozilla9025.com.taskmanager.ui.activities;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import task.mozilla9025.com.taskmanager.R;
+import task.mozilla9025.com.taskmanager.preferences.PreferencesHelper;
+import task.mozilla9025.com.taskmanager.realm.RealmManager;
 import task.mozilla9025.com.taskmanager.ui.fragments.InboxFragment;
 import task.mozilla9025.com.taskmanager.ui.fragments.ProjectsFragment;
 import task.mozilla9025.com.taskmanager.ui.fragments.WorkflowFragment;
@@ -39,10 +38,7 @@ public class MainActivity extends AppCompatActivity
     TextView tvTitle;
 
     private LinearLayout llNavHeader;
-    private String currentFragment;
     private InboxFragment inboxFragment;
-    private WorkflowFragment workflowFragment;
-    private ProjectsFragment projectsFragment;
     private AnimationDrawable anim;
 
     @Override
@@ -50,10 +46,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        if (getIntent().getAction().equals(Intent.ACTION_VIEW)) {
-            Log.d("INTENT", "onCreate: " + getIntent());
-            Log.d("INTENT", "data: " + getIntent().getData());
-        }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -68,8 +60,8 @@ public class MainActivity extends AppCompatActivity
         llNavHeader = headerLayout.findViewById(R.id.ll_nav_header);
 
         anim = (AnimationDrawable) llNavHeader.getBackground();
-        anim.setEnterFadeDuration(6000);
-        anim.setExitFadeDuration(6000);
+        anim.setEnterFadeDuration(4000);
+        anim.setExitFadeDuration(4000);
 
 
         if (inboxFragment == null) {
@@ -102,28 +94,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -136,6 +106,14 @@ public class MainActivity extends AppCompatActivity
             commitFragmentTransaction(new WorkflowFragment());
         } else if (id == R.id.nav_projects) {
             commitFragmentTransaction(new ProjectsFragment());
+        } else if (id == R.id.nav_logout) {
+            try (Realm realm = Realm.getDefaultInstance()) {
+                new RealmManager().clearData(realm);
+            }
+            new PreferencesHelper(this).clearData();
+            startActivity(new Intent(this, StartActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            finish();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

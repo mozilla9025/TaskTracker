@@ -16,6 +16,12 @@
             android:id="@+id/nav_projects"
             android:icon="@drawable/ic_projects"
             android:title="Projects" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_close"
+            android:title="Logout" />
+
     </group>
 
 </menu>

@@ -9,7 +9,7 @@ public class PreferencesHelper {
     private SharedPreferences sp;
 
     public PreferencesHelper(Context context) {
-        sp = context.getSharedPreferences("task.mozilla9025.com.preferences.PreferencesHelper",Context.MODE_PRIVATE);
+        sp = context.getSharedPreferences("task.mozilla9025.com.preferences.PreferencesHelper", Context.MODE_PRIVATE);
     }
 
     public String getAccessToken() {
@@ -21,4 +21,8 @@ public class PreferencesHelper {
                 .apply();
     }
 
+    public void clearData() {
+        sp.edit().clear()
+                .apply();
+    }
 }
