@@ -60,17 +60,20 @@ public final class UserApiController {
                     e.printStackTrace();
                     return;
                 }
-                String accessToken = null;
                 try {
-                    accessToken = parser.parseAccessToken(responseStr);
+                    if (!parser.parseStatus(responseStr)) {
+                        GlobalBus.getBus().post(new BusMessage().login(false));
+                    }
+                    String accessToken = parser.parseAccessToken(responseStr);
+                    if (accessToken == null) {
+                        return;
+                    }
+                    new PreferencesHelper(context).setAccessToken(accessToken);
+                    GlobalBus.getBus().post(new BusMessage().login(true));
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    GlobalBus.getBus().post(new BusMessage().error());
                 }
-                if (accessToken == null) {
-                    return;
-                }
-                new PreferencesHelper(context).setAccessToken(accessToken);
-                GlobalBus.getBus().post(new BusMessage().loggedIn());
             }
 
             @Override
@@ -97,12 +100,13 @@ public final class UserApiController {
                 }
                 try {
                     if (parser.parseStatus(responseStr)) {
-                        GlobalBus.getBus().post(new BusMessage().registered());
+                        GlobalBus.getBus().post(new BusMessage().registered(true));
                     } else {
-                        GlobalBus.getBus().post(new BusMessage().error());
+                        GlobalBus.getBus().post(new BusMessage().registered(false));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    GlobalBus.getBus().post(new BusMessage().registered(false));
                 }
             }
 

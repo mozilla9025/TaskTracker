@@ -86,15 +86,15 @@ public class BusMessage {
         return this;
     }
 
-    public BusMessage loggedIn() {
+    public BusMessage login(boolean success) {
         this.eventId = LOG_IN_ID;
-        this.error = false;
+        this.error = !success;
         return this;
     }
 
-    public BusMessage registered() {
+    public BusMessage registered(boolean success) {
         this.eventId = REGISTERED_ID;
-        this.error = false;
+        this.error = !success;
         return this;
     }
 

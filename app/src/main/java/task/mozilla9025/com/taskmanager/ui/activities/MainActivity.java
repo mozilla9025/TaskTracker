@@ -27,8 +27,7 @@ import task.mozilla9025.com.taskmanager.ui.fragments.InboxFragment;
 import task.mozilla9025.com.taskmanager.ui.fragments.ProjectsFragment;
 import task.mozilla9025.com.taskmanager.ui.fragments.WorkflowFragment;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.fragment_root)
     FrameLayout fragmentRootView;

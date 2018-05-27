@@ -52,11 +52,13 @@ public class SplashScreenActivity extends AppCompatActivity {
         int eventId = msg.getEventId();
         if (eventId == BusMessage.ACCOUNT_CONFIRMED_ID) {
             preferencesHelper.clearData();
-            startActivity(new Intent(SplashScreenActivity.this, LoginActivity.class));
+            startActivity(new Intent(SplashScreenActivity.this, LoginActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
         } else if (eventId == BusMessage.ERROR_ID) {
             preferencesHelper.clearData();
-            startActivity(new Intent(SplashScreenActivity.this, StartActivity.class));
+            startActivity(new Intent(SplashScreenActivity.this, StartActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
         }
     }

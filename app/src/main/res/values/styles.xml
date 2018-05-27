@@ -22,4 +22,12 @@
         <item name="textColorError">@color/red</item>
     </style>
 
+    <style name="til_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textSize">12sp</item>
+        <item name="colorControlNormal">@color/colorWhite</item>
+        <item name="colorControlActivated">@color/colorWhite</item>
+        <item name="textColorError">@color/red</item>
+    </style>
+
 </resources>
