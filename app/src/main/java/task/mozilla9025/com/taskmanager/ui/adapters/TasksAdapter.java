@@ -15,10 +15,13 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 import task.mozilla9025.com.taskmanager.R;
+import task.mozilla9025.com.taskmanager.models.Profile;
 import task.mozilla9025.com.taskmanager.models.Task;
+import task.mozilla9025.com.taskmanager.realm.RealmManager;
 import task.mozilla9025.com.taskmanager.utils.DateUtils;
 
 public class TasksAdapter extends RealmRecyclerViewAdapter<Task, TasksAdapter.TaskVH> {
@@ -51,6 +54,21 @@ public class TasksAdapter extends RealmRecyclerViewAdapter<Task, TasksAdapter.Ta
         h.btnDelete.setOnClickListener(v -> clickListener.onDeleteClick(pos));
 
         h.tvTaskName.setText(task.getTitle());
+
+        if (task.getAssigneeId() != null) {
+            try (Realm realm = Realm.getDefaultInstance()) {
+                Profile p = RealmManager.getProfileById(realm, task.getAssigneeId());
+                if (p != null) {
+                    h.tvAssigneeName.setText("Assigned to: \n" + p.getName() + " " + p.getSurname());
+                    h.tvAssigneeName.setVisibility(View.VISIBLE);
+                } else {
+                    h.tvAssigneeName.setVisibility(View.GONE);
+                }
+            }
+        } else {
+            h.tvAssigneeName.setVisibility(View.GONE);
+        }
+
         if (task.getDueDate() == null) {
             h.tvDeadline.setVisibility(View.GONE);
         } else {
@@ -58,7 +76,8 @@ public class TasksAdapter extends RealmRecyclerViewAdapter<Task, TasksAdapter.Ta
             h.tvDeadline.setText("Deadline: " + DateUtils.formatDate(task.getDueDate()));
         }
 
-        h.viewColor.getBackground().setColorFilter(Color.parseColor(task.getColor()), PorterDuff.Mode.SRC);
+        if (task.getColor() != null)
+            h.viewColor.getBackground().setColorFilter(Color.parseColor(task.getColor()), PorterDuff.Mode.SRC);
     }
 
     @Override
@@ -72,6 +91,8 @@ public class TasksAdapter extends RealmRecyclerViewAdapter<Task, TasksAdapter.Ta
         TextView tvTaskName;
         @BindView(R.id.tv_task_deadline)
         TextView tvDeadline;
+        @BindView(R.id.tv_assignee_name)
+        TextView tvAssigneeName;
         @BindView(R.id.btn_edit_task)
         ImageButton btnEdit;
         @BindView(R.id.btn_delete_task)

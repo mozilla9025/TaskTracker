@@ -1,29 +1,19 @@
 package task.mozilla9025.com.taskmanager.ui.fragments;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.Realm;
 import task.mozilla9025.com.taskmanager.R;
-import task.mozilla9025.com.taskmanager.api.TaskApiController;
 import task.mozilla9025.com.taskmanager.models.Task;
-import task.mozilla9025.com.taskmanager.preferences.PreferencesHelper;
-import task.mozilla9025.com.taskmanager.realm.RealmManager;
-import task.mozilla9025.com.taskmanager.ui.activities.TaskEditActivity;
 import task.mozilla9025.com.taskmanager.utils.DateUtils;
 import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
 import task.mozilla9025.com.taskmanager.utils.eventbus.GlobalBus;

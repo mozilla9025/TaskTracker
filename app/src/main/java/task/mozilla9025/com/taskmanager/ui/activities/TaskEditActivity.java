@@ -24,10 +24,12 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import task.mozilla9025.com.taskmanager.R;
 import task.mozilla9025.com.taskmanager.api.TaskApiController;
+import task.mozilla9025.com.taskmanager.models.Profile;
 import task.mozilla9025.com.taskmanager.models.Project;
 import task.mozilla9025.com.taskmanager.models.Task;
 import task.mozilla9025.com.taskmanager.preferences.PreferencesHelper;
 import task.mozilla9025.com.taskmanager.realm.RealmManager;
+import task.mozilla9025.com.taskmanager.ui.adapters.ProfileDropDownAdapter;
 import task.mozilla9025.com.taskmanager.ui.adapters.ProjectsDropDownAdapter;
 import task.mozilla9025.com.taskmanager.utils.DateUtils;
 
@@ -35,6 +37,8 @@ public class TaskEditActivity extends AppCompatActivity {
 
     @BindView(R.id.spinner_projects)
     Spinner spinnerProjects;
+    @BindView(R.id.spinner_profiles)
+    Spinner spinnerProfiles;
     @BindView(R.id.et_title)
     EditText etTitle;
     @BindView(R.id.et_description)
@@ -61,6 +65,7 @@ public class TaskEditActivity extends AppCompatActivity {
     private Integer scheduledTo;
     private Integer dueDate;
     private Integer projectId;
+    private Integer assigneeId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +79,7 @@ public class TaskEditActivity extends AppCompatActivity {
 
         realm.executeTransaction(tr -> {
             tr.insertOrUpdate(Project.createInbox());
+            tr.insertOrUpdate(Profile.createEmptyAssignee());
         });
 
         if (intentTask.getColor() != null) {
@@ -86,13 +92,27 @@ public class TaskEditActivity extends AppCompatActivity {
             }
         }
 
-        RealmResults<Project> projects = new RealmManager().getProjects(realm, true);
+        RealmResults<Project> projects = RealmManager.getProjects(realm, true);
         ProjectsDropDownAdapter adapter = new ProjectsDropDownAdapter(projects);
         spinnerProjects.setAdapter(adapter);
         spinnerProjects.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 projectId = adapter.getItem(position).getId();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        RealmResults<Profile> profiles = RealmManager.getProfiles(realm, true);
+        ProfileDropDownAdapter profileAdapter = new ProfileDropDownAdapter(profiles);
+        spinnerProfiles.setAdapter(profileAdapter);
+        spinnerProfiles.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                assigneeId = profileAdapter.getItem(position).getId();
             }
 
             @Override
@@ -109,6 +129,10 @@ public class TaskEditActivity extends AppCompatActivity {
         if (intentTask.getProjectId() != null) {
             int selection = adapter.getPositionById(intentTask.getProjectId());
             spinnerProjects.setSelection(selection);
+        }
+        if (intentTask.getAssigneeId() != null) {
+            int selection = profileAdapter.getPositionById(intentTask.getAssigneeId());
+            spinnerProfiles.setSelection(selection);
         }
 
 
@@ -131,7 +155,8 @@ public class TaskEditActivity extends AppCompatActivity {
         taskToUpdate.setProjectId(projectId);
         taskToUpdate.setDueDate(dueDate);
         taskToUpdate.setScheduledTo(scheduledTo);
-
+        taskToUpdate.setAssigneeId(assigneeId);
+        RealmManager.storeTask(realm,taskToUpdate);
         new TaskApiController(accessToken).updateTask(taskToUpdate);
         finish();
     }

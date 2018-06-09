@@ -46,7 +46,6 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
     RecyclerView rvProjects;
 
     private Realm realm;
-    private RealmManager realmManager;
     private ProjectsAdapter adapter;
     private RealmResults<Project> projects;
     private ProjectApiController projectApiController;
@@ -73,9 +72,8 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
         projectApiController = new ProjectApiController(accessToken);
         projectApiController.getProjects();
         realm = Realm.getDefaultInstance();
-        realmManager = new RealmManager();
         if (projects == null) {
-            projects = realmManager.getProjects(realm, false);
+            projects = RealmManager.getProjects(realm, false);
         }
         adapter = new ProjectsAdapter(this, projects);
         rvProjects.setAdapter(adapter);
@@ -129,7 +127,7 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
         int eventId = msg.getEventId();
         Log.d("EDITED", "onBusMessage: " + eventId);
         if (eventId == BusMessage.PROJECT_EDITED_ID) {
-            projects = realmManager.getProjects(realm, false);
+            projects = RealmManager.getProjects(realm, false);
             adapter.updateData(projects);
             Log.d("PROJECTS", "onBusMessage: "+projects);
         }
@@ -143,7 +141,7 @@ public class ProjectsFragment extends Fragment implements ProjectsAdapter.Projec
         builder.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
             Integer id = adapter.getItem(pos).getId();
             projectApiController.deleteProject(id);
-            realmManager.deleteProject(realm, id);
+            RealmManager.deleteProject(realm, id);
             adapter.updateData(projects);
         });
         builder.show();

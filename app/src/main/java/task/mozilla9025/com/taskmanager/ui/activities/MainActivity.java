@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             commitFragmentTransaction(new ProjectsFragment());
         } else if (id == R.id.nav_logout) {
             try (Realm realm = Realm.getDefaultInstance()) {
-                new RealmManager().clearData(realm);
+                RealmManager.clearData(realm);
             }
             new PreferencesHelper(this).clearData();
             startActivity(new Intent(this, StartActivity.class)

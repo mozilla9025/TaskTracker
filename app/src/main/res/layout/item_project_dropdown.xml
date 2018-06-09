@@ -33,7 +33,8 @@
             android:maxLines="2"
             android:text="Task name"
             android:textColor="@color/colorText"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_task_count"

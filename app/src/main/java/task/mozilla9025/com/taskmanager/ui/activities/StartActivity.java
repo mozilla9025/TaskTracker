@@ -6,10 +6,16 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
 import task.mozilla9025.com.taskmanager.R;
+import task.mozilla9025.com.taskmanager.models.Profile;
+import task.mozilla9025.com.taskmanager.realm.RealmManager;
 
 public class StartActivity extends AppCompatActivity {
 

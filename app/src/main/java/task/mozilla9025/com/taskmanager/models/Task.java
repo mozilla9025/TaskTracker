@@ -24,6 +24,8 @@ public class Task extends RealmObject implements Parcelable {
     @Nullable
     private Integer projectId;
     private Integer created;
+    @Nullable
+    private Integer assigneeId;
 
     public Task() {
     }
@@ -127,6 +129,14 @@ public class Task extends RealmObject implements Parcelable {
         this.created = created;
     }
 
+    public Integer getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(Integer assigneeId) {
+        this.assigneeId = assigneeId;
+    }
+
     protected Task(Parcel in) {
         id = in.readByte() == 0x00 ? null : in.readInt();
         title = in.readString();
@@ -136,6 +146,7 @@ public class Task extends RealmObject implements Parcelable {
         dueDate = in.readByte() == 0x00 ? null : in.readInt();
         projectId = in.readByte() == 0x00 ? null : in.readInt();
         created = in.readByte() == 0x00 ? null : in.readInt();
+        assigneeId = in.readByte() == 0x00 ? null : in.readInt();
     }
 
     @Override
@@ -177,6 +188,12 @@ public class Task extends RealmObject implements Parcelable {
         } else {
             dest.writeByte((byte) (0x01));
             dest.writeInt(created);
+        }
+        if (assigneeId == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(assigneeId);
         }
     }
 

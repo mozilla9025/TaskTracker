@@ -14,10 +14,13 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 import task.mozilla9025.com.taskmanager.R;
+import task.mozilla9025.com.taskmanager.models.Profile;
 import task.mozilla9025.com.taskmanager.models.Task;
+import task.mozilla9025.com.taskmanager.realm.RealmManager;
 import task.mozilla9025.com.taskmanager.utils.DateUtils;
 
 public class TasksInProjectAdapter extends RealmRecyclerViewAdapter<Task, TasksInProjectAdapter.TaskVH> {
@@ -76,6 +79,22 @@ public class TasksInProjectAdapter extends RealmRecyclerViewAdapter<Task, TasksI
         } else {
             h.viewColor.setBackgroundColor(Color.parseColor("#ffffff"));
         }
+
+        if (task.getAssigneeId() != null) {
+            final Profile profile;
+            try (Realm realm = Realm.getDefaultInstance()) {
+                profile = RealmManager.getProfileById(realm, task.getAssigneeId());
+            }
+            if (profile != null) {
+                h.tvAssignee.setText("Assigned to:\n" + profile.getName() + " " + profile.getSurname());
+                h.tvAssignee.setVisibility(View.VISIBLE);
+            } else {
+                h.tvAssignee.setVisibility(View.GONE);
+            }
+        } else {
+            h.tvAssignee.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -87,6 +106,8 @@ public class TasksInProjectAdapter extends RealmRecyclerViewAdapter<Task, TasksI
 
         @BindView(R.id.tv_task_name)
         TextView tvTaskName;
+        @BindView(R.id.tv_task_assignee)
+        TextView tvAssignee;
         @BindView(R.id.tv_task_deadline)
         TextView tvDeadline;
         @BindView(R.id.tv_task_description)

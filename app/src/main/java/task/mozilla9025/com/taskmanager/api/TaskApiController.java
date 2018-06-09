@@ -16,6 +16,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import task.mozilla9025.com.taskmanager.models.Task;
+import task.mozilla9025.com.taskmanager.realm.RealmManager;
 import task.mozilla9025.com.taskmanager.utils.JsonParser;
 import task.mozilla9025.com.taskmanager.utils.eventbus.BusMessage;
 import task.mozilla9025.com.taskmanager.utils.eventbus.GlobalBus;
@@ -65,9 +66,7 @@ public final class TaskApiController {
                 try {
                     List<Task> tasks = parser.parseTaskList(responseStr);
                     try (Realm realm = Realm.getDefaultInstance()) {
-                        realm.executeTransaction(tr -> {
-                            tr.insertOrUpdate(tasks);
-                        });
+                        RealmManager.storeTasks(realm, tasks);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -99,9 +98,7 @@ public final class TaskApiController {
                 try {
                     List<Task> tasks = parser.parseTaskList(responseStr);
                     try (Realm realm = Realm.getDefaultInstance()) {
-                        realm.executeTransaction(tr -> {
-                            tr.insertOrUpdate(tasks);
-                        });
+                        RealmManager.storeTasks(realm, tasks);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -166,7 +163,7 @@ public final class TaskApiController {
                     return;
                 }
                 try {
-                    Task task = parser.parseTaskByField(responseStr,"result");
+                    Task task = parser.parseTaskByField(responseStr, "result");
                     try (Realm realm = Realm.getDefaultInstance()) {
                         realm.executeTransaction(tr -> {
                             tr.insertOrUpdate(task);
@@ -203,7 +200,6 @@ public final class TaskApiController {
                 String responseStr = null;
                 try {
                     responseStr = response.body().string();
-                    Log.i("TASK UPDATE", "onResponse: " + responseStr);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;
@@ -211,9 +207,7 @@ public final class TaskApiController {
                 try {
                     Task task = parser.parseTask(responseStr);
                     try (Realm realm = Realm.getDefaultInstance()) {
-                        realm.executeTransaction(tr -> {
-                            tr.insertOrUpdate(task);
-                        });
+                        RealmManager.storeTask(realm, task);
                     }
                     GlobalBus.getBus().post(new BusMessage().taskEdited());
                 } catch (JSONException e) {

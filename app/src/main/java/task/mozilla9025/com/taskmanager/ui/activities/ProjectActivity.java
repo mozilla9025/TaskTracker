@@ -41,7 +41,6 @@ public class ProjectActivity extends AppCompatActivity implements TasksInProject
 
     private Project project;
     private Realm realm;
-    private RealmManager realmManager;
     private TasksInProjectAdapter adapter;
     private TaskApiController taskApiController;
     private RealmResults<Task> tasks;
@@ -56,7 +55,6 @@ public class ProjectActivity extends AppCompatActivity implements TasksInProject
         tvProjectName.setText(project.getName());
         String accessToken = new PreferencesHelper(this).getAccessToken();
         taskApiController = new TaskApiController(accessToken);
-        realmManager = new RealmManager();
         if (project.getColor() != null) {
             try {
                 int color = Color.parseColor(project.getColor());
@@ -66,7 +64,7 @@ public class ProjectActivity extends AppCompatActivity implements TasksInProject
                 toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
             }
         }
-        tasks = realmManager.getProjectTasks(realm, project.getId());
+        tasks = RealmManager.getProjectTasks(realm, project.getId());
         adapter = new TasksInProjectAdapter(this, tasks);
         rvTasks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvTasks.setAdapter(adapter);
@@ -121,8 +119,8 @@ public class ProjectActivity extends AppCompatActivity implements TasksInProject
         builder.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
             Integer id = adapter.getItem(pos).getId();
             taskApiController.deleteTask(id);
-            realmManager.deleteTask(realm, id);
-            tasks = realmManager.getProjectTasks(realm, project.getId());
+            RealmManager.deleteTask(realm, id);
+            tasks = RealmManager.getProjectTasks(realm, project.getId());
             adapter.updateData(tasks);
         });
         builder.show();

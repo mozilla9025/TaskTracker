@@ -39,7 +39,6 @@ public class WorkflowFragment extends Fragment {
     private Realm realm;
     private RealmResults<Task> tasks;
     private CustomPagerAdapter adapter;
-    private RealmManager realmManager;
 
     public WorkflowFragment() {
     }
@@ -57,8 +56,7 @@ public class WorkflowFragment extends Fragment {
         super.onStart();
         GlobalBus.getBus().register(this);
         realm = Realm.getDefaultInstance();
-        realmManager = new RealmManager();
-        tasks = realmManager.getTasksWithDeadline(realm);
+        tasks = RealmManager.getTasksWithDeadline(realm);
         adapter = new CustomPagerAdapter(getChildFragmentManager(), tasks);
         viewPager.setAdapter(adapter);
     }
@@ -92,7 +90,7 @@ public class WorkflowFragment extends Fragment {
             new TaskApiController(new PreferencesHelper(getContext()).getAccessToken())
                     .deleteTask(id);
             try (Realm realm = Realm.getDefaultInstance()) {
-                realmManager.deleteTask(realm, id);
+                RealmManager.deleteTask(realm, id);
             }
 
             adapter.destroyFragment();

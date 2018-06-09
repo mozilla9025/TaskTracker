@@ -46,7 +46,6 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     RecyclerView rvInbox;
 
     private Realm realm;
-    private RealmManager realmManager;
     private TasksAdapter adapter;
     private RealmResults<Task> inboxTasks;
     private TaskApiController taskApiController;
@@ -72,10 +71,9 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
         accessToken = new PreferencesHelper(getContext()).getAccessToken();
         taskApiController = new TaskApiController(accessToken);
         realm = Realm.getDefaultInstance();
-        realmManager = new RealmManager();
         taskApiController.getTasksInInbox(20, 0);
         if (inboxTasks == null) {
-            inboxTasks = realmManager.getInboxTasks(realm);
+            inboxTasks = RealmManager.getInboxTasks(realm);
         }
         adapter = new TasksAdapter(this, inboxTasks);
         rvInbox.setAdapter(adapter);
@@ -127,7 +125,7 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
     public void onBusMessage(BusMessage msg) {
         int eventId = msg.getEventId();
         if (eventId == BusMessage.DELETE_TASK_ID) {
-            inboxTasks = realmManager.getInboxTasks(realm);
+            inboxTasks = RealmManager.getInboxTasks(realm);
             adapter.updateData(inboxTasks);
         }
     }
@@ -140,8 +138,8 @@ public class InboxFragment extends Fragment implements TasksAdapter.TaskClickLis
         builder.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
             Integer id = adapter.getItem(pos).getId();
             taskApiController.deleteTask(id);
-            realmManager.deleteTask(realm, id);
-            inboxTasks = realmManager.getInboxTasks(realm);
+            RealmManager.deleteTask(realm, id);
+            inboxTasks = RealmManager.getInboxTasks(realm);
             adapter.updateData(inboxTasks);
         });
         builder.show();

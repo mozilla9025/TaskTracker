@@ -37,21 +37,23 @@ public class ProjectsDropDownAdapter extends RealmBaseAdapter<Project> {
         }
 
         final Project project = getItem(position);
-        h.tvName.setText(project.getName());
-        if (project.getTaskCount() == null) {
-            h.tvTaskCount.setVisibility(View.GONE);
-        } else {
-            h.tvTaskCount.setVisibility(View.VISIBLE);
-            h.tvTaskCount.setText("Tasks: " + project.getTaskCount());
-        }
-        if (project.getColor() != null) {
-            try {
-                h.viewColor.getBackground().setColorFilter(Color.parseColor(project.getColor()), PorterDuff.Mode.SRC);
-            } catch (IllegalArgumentException e) {
+        if (project != null) {
+            h.tvName.setText(project.getName());
+            if (project.getTaskCount() == null) {
+                h.tvTaskCount.setVisibility(View.GONE);
+            } else {
+                h.tvTaskCount.setVisibility(View.VISIBLE);
+                h.tvTaskCount.setText("Tasks: " + project.getTaskCount());
+            }
+            if (project.getColor() != null) {
+                try {
+                    h.viewColor.getBackground().setColorFilter(Color.parseColor(project.getColor()), PorterDuff.Mode.SRC);
+                } catch (IllegalArgumentException e) {
+                    h.viewColor.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.grey), PorterDuff.Mode.SRC);
+                }
+            } else {
                 h.viewColor.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.grey), PorterDuff.Mode.SRC);
             }
-        } else {
-            h.viewColor.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.grey), PorterDuff.Mode.SRC);
         }
         return convertView;
     }
